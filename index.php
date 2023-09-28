@@ -30,7 +30,7 @@ function initServer() {
 function main() {
     include "config.php";
 
-    printHeader("curload", "Upload files", $Icon, $Stylesheet);
+    printHeader("curload", "Simply upload files", $Icon, $Stylesheet);
 
     print "\t\t\t<h1>speedie's super awesome file uploader junk</h1>\n";
     print "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">Select file to upload<br><input type=\"file\" name=\"file\" id=\"file\"><br><input type=\"text\" name=\"key\" placeholder=\"Upload key here\"><br><input type=\"submit\" value=\"Upload selected file\" name=\"web\"></form>\n";

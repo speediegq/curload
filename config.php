@@ -5,6 +5,10 @@
     $keyFile     = "passwords.txt";
     $tempKeyFile = "temporary_passwords.txt";
     $maxFileSize = "100";
+    $sql         = true;
+    $sqlDB       = "curload.db";
+    $storeIP     = true;
+    $storeAgent  = true;
 
     define('CONFIG_FILE', 'config.ini');
 
@@ -20,4 +24,8 @@
     $keyFile = $configEntries['key_file'];
     $tempKeyFile = $configEntries['temp_key_file'];
     $maxFileSize = $configEntries['max_size'];
+    $sql = $configEntries['sql'];
+    $sqlDB = $configEntries['sqldb'];
+    $storeIP = $configEntries['store_ip'];
+    $storeAgent = $configEntries['store_user_agent'];
 ?>

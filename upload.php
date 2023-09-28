@@ -14,7 +14,39 @@
     $uploadLimit = $maxFileSize * 1000000;
     $self = dirname($_SERVER['PHP_SELF']);
 
-    if (isset($_FILES['file']['name'])) {
+    if (!isset($_FILES['file']['name'])) {
+        print "You didn't specify a file.";
+        die();
+    }
+
+    // init database
+    if ($sql) {
+        $Database = new SQLite3($sqlDB);
+        $Database->exec("CREATE TABLE keys(id INTEGER PRIMARY KEY, key TEXT)");
+        $Database->exec("CREATE TABLE tkeys(id INTEGER PRIMARY KEY, key TEXT, uploads INT)");
+        $Database->exec("CREATE TABLE uploads(id INTEGER PRIMARY KEY, file TEXT, date TEXT, useragent TEXT, ip TEXT)");
+
+        $DatabaseQuery = $Database->query('SELECT * FROM keys');
+        while ($line = $DatabaseQuery->fetchArray()) {
+            if ($line['key'] == $Key && $Key != "" && $line['key'] != "") {
+                $Authorized = 1;
+                break;
+            }
+        }
+
+        if ($Authorized != 1) {
+            $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
+            while ($line = $DatabaseQuery->fetchArray()) {
+                if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploads'] != 0) {
+                    $numberOfUploads = $line['uploads'] - 1;
+                    $id = $line['id'];
+                    $Database->exec("UPDATE tkeys SET uploads=$numberOfUploads WHERE id=$id");
+                    $Authorized = 1;
+                    break;
+                }
+            }
+        }
+    } else { // no sql version
         // All normal keys will be considered valid
         if (file_exists($keyFile)) {
             $validKeys = explode("\n", file_get_contents($keyFile));
@@ -45,58 +77,55 @@
                 }
             }
         }
+    }
 
-        // Not an authorized key
-        if ($Authorized == 0) {
-            print "Not authorized: Key '$Key' is invalid.";
-            die();
-        }
+    // Not an authorized key
+    if ($Authorized == 0) {
+        print "Not authorized: Key '$Key' is invalid.";
+        die();
+    }
 
-        if ($_FILES['file']['size'] > $uploadLimit) {
-            print "File is too big. Max file size is $maxFileSize" . "MB";
-            die();
-        }
+    if ($_FILES['file']['size'] > $uploadLimit) {
+        print "File is too big. Max file size is $maxFileSize" . "MB";
+        die();
+    }
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
 
-        $destinationFile = $uploadDir . basename($_FILES['file']['name']);
+    $destinationFile = $uploadDir . basename($_FILES['file']['name']);
 
-        if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
-            $destinationFile = $uploadDir . rand(10000,100000) . "." . strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
+    if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
+        $destinationFile = $uploadDir . rand(10000,100000) . "." . strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
 
-            if (file_exists($destinationFile)) { // wtf
-                print "Failed to upload file.";
-                die();
-            }
-        }
-
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
-            $uploadedFile = dirname($_SERVER['PHP_SELF']) . $destinationFile;
-
-            if ($tempKeyUsed) { // Remove temporary key
-                $file = file_get_contents($tempKeyFile);
-                $file = preg_replace("/\b$Key\b/", "", $file);
-                file_put_contents($tempKeyFile, $file);
-            }
-
-            print "$uploadedFile";
-
-            if (isset($_REQUEST['web'])) { // redirect back to index
-                print "<p><a href=\"$uploadedFile\">Your link</a></p>\n";
-                die();
-            }
-        } else {
+        if (file_exists($destinationFile)) { // wtf
             print "Failed to upload file.";
+            die();
+        }
+    }
 
-            if ($_FILES['file']['error'] == 1) {
-                print "Is the upload_max_filesize set up properly?";
-            }
+    if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
+        $uploadedFile = dirname($_SERVER['PHP_SELF']) . $destinationFile;
+
+        if ($tempKeyUsed) { // Remove temporary key
+            $file = file_get_contents($tempKeyFile);
+            $file = preg_replace("/\b$Key\b/", "", $file);
+            file_put_contents($tempKeyFile, $file);
+        }
+
+        print "$uploadedFile";
+
+        if (isset($_REQUEST['web'])) { // redirect back to index
+            print "<p><a href=\"$uploadedFile\">Your link</a></p>\n";
             die();
         }
     } else {
-        print "You didn't specify a file.";
+        print "Failed to upload file.";
+
+        if ($_FILES['file']['error'] == 1) {
+            print "Is the upload_max_filesize set up properly?";
+        }
         die();
     }
 ?>
