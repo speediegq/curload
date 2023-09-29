@@ -20,11 +20,12 @@
     }
 
     // init database
-    if ($sql) {
+    if ($sql == "true" || $sql) {
         $Database = new SQLite3($sqlDB);
-        $Database->exec("CREATE TABLE keys(id INTEGER PRIMARY KEY, key TEXT)");
-        $Database->exec("CREATE TABLE tkeys(id INTEGER PRIMARY KEY, key TEXT, uploads INT)");
-        $Database->exec("CREATE TABLE uploads(id INTEGER PRIMARY KEY, file TEXT, date TEXT, useragent TEXT, ip TEXT)");
+        $Database->exec("CREATE TABLE admins(id INTEGER PRIMARY KEY, key TEXT, useragent TEXT, ip TEXT)");
+        $Database->exec("CREATE TABLE keys(id INTEGER PRIMARY KEY, key TEXT, lastused TEXT, issued TEXT, useragent TEXT, ip TEXT)");
+        $Database->exec("CREATE TABLE tkeys(id INTEGER PRIMARY KEY, key TEXT, uploads INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+        $Database->exec("CREATE TABLE uploads(id INTEGER PRIMARY KEY, file TEXT, uploaddate TEXT, useragent TEXT, ip TEXT)");
 
         $DatabaseQuery = $Database->query('SELECT * FROM keys');
         while ($line = $DatabaseQuery->fetchArray()) {
