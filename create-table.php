@@ -10,13 +10,13 @@ function createTables($sqlDB) {
     /* administrator table
      * id (INTEGER PRIMARY KEY)
      * key (TEXT)
-     * primary (INT)
+     * primaryadmin (INT)
      * lastused (TEXT)
      * issued (TEXT)
      * ip (TEXT)
      * useragent (TEXT)
      */
-    $Database->exec("CREATE TABLE IF NOT EXISTS admins(id INTEGER PRIMARY KEY, key TEXT, primary INT, numberofuploads INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+    $Database->exec("CREATE TABLE IF NOT EXISTS admins(id INTEGER PRIMARY KEY, key TEXT, primaryadmin INT, numberofuploads INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
 
     /* keys table
      * id (INTEGER PRIMARY KEY)

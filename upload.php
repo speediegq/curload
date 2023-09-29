@@ -27,19 +27,24 @@ if (!isset($_FILES['file']['name'])) {
 }
 
 // init database
-if ($sql == "true" || $sql) {
+if (!$publicUploading || $publicUploading == "false") {
     $Database = createTables($sqlDB);
 
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == $Key && $Key != "" && $line['key'] != "") {
+        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
             $id = $line['id'];
             $keyID = $id;
-            $numberOfUploads = $line['numberofuploads'] + 1;
-                $lastUsed = date($dateFormat);
 
-            $Database->exec("UPDATE keys SET lastused='$lastUsed' WHERE id='$id'");
-            $Database->exec("UPDATE keys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+            if ($storeLastUsage || $storeLastUsage == "true") {
+                $lastUsed = date($dateFormat);
+                $Database->exec("UPDATE keys SET lastused='$lastUsed' WHERE id='$id'");
+            }
+
+            if ($storeUploads || $storeUploads == "true") {
+                $numberOfUploads = $line['numberofuploads'] + 1;
+                $Database->exec("UPDATE keys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+            }
 
             if ($storeIP || $storeIP == "true") {
                 if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -67,16 +72,22 @@ if ($sql == "true" || $sql) {
     if ($Authorized != 1) {
         $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
         while ($line = $DatabaseQuery->fetchArray()) {
-            if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0) {
+            if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0 && ($enableTemporaryKeys || $enableTemporaryKeys == "true")) {
                 $uploadsLeft = $line['uploadsleft'] - 1;
-                $numberOfUploads = $line['numberofuploads'] + 1;
-                $lastUsed = date($dateFormat);
                 $id = $line['id'];
                 $keyID = $id;
 
                 $Database->exec("UPDATE tkeys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
-                $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id='$id'");
-                $Database->exec("UPDATE tkeys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+
+                if ($storeLastUsage || $storeLastUsage == "true") {
+                    $lastUsed = date($dateFormat);
+                    $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id='$id'");
+                }
+
+                if ($storeUploads || $storeUploads == "true") {
+                    $numberOfUploads = $line['numberofuploads'] + 1;
+                    $Database->exec("UPDATE tkeys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+                }
 
                 if ($storeIP || $storeIP == "true") {
                     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -107,7 +118,7 @@ if ($sql == "true" || $sql) {
         $DatabaseQuery = $Database->query('SELECT * FROM admins');
 
         while ($line = $DatabaseQuery->fetchArray()) {
-            if ($line['key'] == $Key && $Key != "" && $line['key'] != "") {
+            if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableAdminKeys || $enableAdminKeys == "true")) {
                 $id = $line['id'];
                 $keyID = $id;
                 $numberOfUploads = $line['numberofuploads'] + 1;
@@ -139,77 +150,51 @@ if ($sql == "true" || $sql) {
             }
         }
     }
-} else { // no sql version
-    // All normal keys will be considered valid
-    if (file_exists($keyFile)) {
-        $validKeys = explode("\n", file_get_contents($keyFile));
-    } else { // one master key must exist
-        print("Error: No valid keys found.");
+
+    // Not an authorized key
+    if ($Authorized == 0) {
+        print "Not authorized: Key '$Key' is invalid.";
         die();
     }
-
-    foreach ($validKeys as $ValidKey) {
-        if ($Key == $ValidKey && $Key != "" && $ValidKey != "") {
-            $Authorized = 1;
-            $keyType = 0;
-
-            break;
-        }
-    }
-
-    // Temporary keys as well
-    if (file_exists($tempKeyFile)) {
-        $tempValidKeys = explode("\n", file_get_contents($tempKeyFile));
-
-        foreach ($tempValidKeys as $ValidKey) {
-            if ($Key == $ValidKey && $Key != "" && $ValidKey != "") {
-                $Authorized = 1;
-                $keyType = 1; // key should be considered invalid after this use.
-
-                break;
-            }
-        }
-    }
 }
 
-// Not an authorized key
-if ($Authorized == 0) {
-    print "Not authorized: Key '$Key' is invalid.";
-    die();
-}
-
-if ($_FILES['file']['size'] > $uploadLimit) {
+if ($_FILES['file']['size'] > $uploadLimit && $uploadLimit > 0) {
     print "File is too big. Max file size is $maxFileSize" . "MB";
     die();
 }
 
+// check if file is too big to be uploaded
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);
 }
 
 $destinationFile = $uploadDir . basename($_FILES['file']['name']);
 
-if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
-    $fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
-    if (isset($fileExtension)) {
-        $extension = "." . $fileExtension;
-    }
-    $destinationFile = $uploadDir . rand(1000,100000) . $extension;
+// rename file if necessary
+if (!$replaceOriginal || $replaceOriginal == "false") {
+    if (file_exists($destinationFile) && $) { // rename file to distinguish it from existing file
+        $fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
+        if (isset($fileExtension)) {
+            $extension = "." . $fileExtension;
+        }
 
-    if (file_exists($destinationFile)) { // wtf
-        print "Failed to upload file.";
-        die();
+        if ($renameDuplicates || $renameDuplicates == "true") {
+            $destinationFile = $uploadDir . rand(1000,100000) . $extension;
+        }
+
+        if (file_exists($destinationFile)) { // wtf
+            print "Failed to upload file.";
+            die();
+        }
     }
 }
 
 if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
     $uploadedFile = dirname($_SERVER['PHP_SELF']) . $destinationFile;
 
-    if ($sql || $sql == "true") {
-        $lastUsed = date($dateFormat);
-        $DatabaseQuery = $Database->query('SELECT * FROM uploads');
-        $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, keytype) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$keyType')");
-    }
+    $lastUsed = date($dateFormat);
+    $DatabaseQuery = $Database->query('SELECT * FROM uploads');
+    $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, keytype) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$keyType')");
 
     if ($keyType == 1) { // Remove temporary key
         $file = file_get_contents($tempKeyFile);

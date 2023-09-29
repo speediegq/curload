@@ -4,20 +4,24 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
-$Stylesheet     = "index.css";
-$Icon           = "favicon.svg";
-$uploadDir      = "uploads/";
-$keyFile        = "passwords.txt";
-$tempKeyFile    = "temporary_passwords.txt";
-$maxFileSize    = "100";
-$sql            = true;
-$sqlDB          = "curload.db";
-$storeIP        = true;
-$storeAgent     = true;
-$storeIssued    = true;
-$storeLastUsage = true;
-$dateFormat     = "Y/m/d";
-$instanceName   = "curload";
+$Stylesheet          = "index.css";
+$Icon                = "favicon.svg";
+$uploadDir           = "uploads/";
+$maxFileSize         = "100";
+$sqlDB               = "curload.db";
+$storeIP             = true;
+$storeAgent          = true;
+$storeIssued         = true;
+$storeLastUsage      = true;
+$storeUploads        = true;
+$publicUploading     = false;
+$renameDuplicates    = true;
+$replaceOriginal     = false;
+$dateFormat          = "Y/m/d";
+$instanceName        = "curload";
+$enableKeys          = true;
+$enableAdminKeys     = true;
+$enableTemporaryKeys = true;
 
 define('CONFIG_FILE', 'config.ini');
 
@@ -30,15 +34,19 @@ $configEntries = parse_ini_file(CONFIG_FILE);
 $Stylesheet = $configEntries['css'];
 $Icon = $configEntries['favicon'];
 $uploadDir = $configEntries['upload_dir'];
-$keyFile = $configEntries['key_file'];
-$tempKeyFile = $configEntries['temp_key_file'];
 $maxFileSize = $configEntries['max_size'];
-$sql = $configEntries['sql'];
 $sqlDB = $configEntries['sqldb'];
 $storeIP = $configEntries['store_ip'];
 $storeAgent = $configEntries['store_user_agent'];
 $storeIssued = $configEntries['store_issued'];
 $storeLastUsage = $configEntries['store_last_usage'];
+$storeUploads = $configEntries['store_number_of_uploads'];
 $dateFormat = $configEntries['date_format'];
 $instanceName = $configEntries['instance_name'];
+$publicUploading = $configEntries['public_uploading'];
+$renameDuplicates = $configEntries['rename_duplicates'];
+$replaceOriginal = $configEntries['replace_original'];
+$enableKeys = $configEntries['enable_keys'];
+$enableAdminKeys = $configEntries['enable_admin_keys'];
+$enableTemporaryKeys = $configEntries['enable_temporary_keys'];
 ?>
