@@ -1,5 +1,6 @@
 <?php
     include "config.php";
+    include "create-table.php";
 
     if (isset($_REQUEST['key'])) {
         $Key = $_REQUEST['key'];
@@ -12,6 +13,7 @@
     $Authorized = 0;
     $tempKeyUsed = 0;
     $uploadLimit = $maxFileSize * 1000000;
+    $keyID = 0;
     $self = dirname($_SERVER['PHP_SELF']);
 
     if (!isset($_FILES['file']['name'])) {
@@ -21,16 +23,37 @@
 
     // init database
     if ($sql == "true" || $sql) {
-        $Database = new SQLite3($sqlDB);
-        $Database->exec("CREATE TABLE admins(id INTEGER PRIMARY KEY, key TEXT, useragent TEXT, ip TEXT)");
-        $Database->exec("CREATE TABLE keys(id INTEGER PRIMARY KEY, key TEXT, lastused TEXT, issued TEXT, useragent TEXT, ip TEXT)");
-        $Database->exec("CREATE TABLE tkeys(id INTEGER PRIMARY KEY, key TEXT, uploads INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
-        $Database->exec("CREATE TABLE uploads(id INTEGER PRIMARY KEY, file TEXT, uploaddate TEXT, useragent TEXT, ip TEXT)");
+        $Database = createTables($sqlDB);
 
         $DatabaseQuery = $Database->query('SELECT * FROM keys');
         while ($line = $DatabaseQuery->fetchArray()) {
             if ($line['key'] == $Key && $Key != "" && $line['key'] != "") {
+                $id = $line['id'];
+                $keyID = $id;
+                $numberOfUploads = $line['numberofuploads'] + 1;
+
+                $Database->exec("UPDATE keys SET lastused=$lastUsed WHERE id=$id");
+                $Database->exec("UPDATE keys SET numberofuploads=$numberOfUploads WHERE id=$id");
+
+                if ($storeIP || $storeIP == "true") {
+                    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip = $_SERVER['HTTP_CLIENT_IP'];
+                    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } else {
+                        $ip = $_SERVER['REMOTE_ADDR'];
+                    }
+
+                    $Database->exec("UPDATE keys SET ip=$ip WHERE id=$id");
+                }
+
+                if ($storeAgent || $storeAgent == "true") {
+                    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                    $Database->exec("UPDATE keys SET useragent=$userAgent WHERE id=$id");
+                }
+
                 $Authorized = 1;
+                $tempKeyUsed = 0;
                 break;
             }
         }
@@ -38,11 +61,36 @@
         if ($Authorized != 1) {
             $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
             while ($line = $DatabaseQuery->fetchArray()) {
-                if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploads'] != 0) {
-                    $numberOfUploads = $line['uploads'] - 1;
+                if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0) {
+                    $uploadsLeft = $line['uploadsleft'] - 1;
+                    $numberOfUploads = $line['numberofuploads'] + 1;
+                    $lastUsed = date($dateFormat);
                     $id = $line['id'];
-                    $Database->exec("UPDATE tkeys SET uploads=$numberOfUploads WHERE id=$id");
+                    $keyID = $id;
+
+                    $Database->exec("UPDATE tkeys SET uploadsleft=$uploadsLeft WHERE id=$id");
+                    $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id=$id");
+                    $Database->exec("UPDATE tkeys SET numberofuploads=$numberOfUploads WHERE id=$id");
+
+                    if ($storeIP || $storeIP == "true") {
+                        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                            $ip = $_SERVER['HTTP_CLIENT_IP'];
+                        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                        } else {
+                            $ip = $_SERVER['REMOTE_ADDR'];
+                        }
+
+                        $Database->exec("UPDATE tkeys SET ip=$ip WHERE id=$id");
+                    }
+
+                    if ($storeAgent || $storeAgent == "true") {
+                        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                        $Database->exec("UPDATE tkeys SET useragent=$userAgent WHERE id=$id");
+                    }
+
                     $Authorized = 1;
+                    $tempKeyUsed = 1;
                     break;
                 }
             }
@@ -108,6 +156,12 @@
 
     if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
         $uploadedFile = dirname($_SERVER['PHP_SELF']) . $destinationFile;
+
+        if ($sql || $sql == "true") {
+            $lastUsed = date($dateFormat);
+            $DatabaseQuery = $Database->query('SELECT * FROM uploads');
+            $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, tempkey) VALUES('$uploadedFile', '$lastUsed', $keyID, $tempKeyUsed)");
+        }
 
         if ($tempKeyUsed) { // Remove temporary key
             $file = file_get_contents($tempKeyFile);

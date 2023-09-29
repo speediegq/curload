@@ -37,6 +37,15 @@ function main() {
     print "\t\t\t<p>Max file size: $maxFileSize MB</p>\n";
     print "\t\t\t<a href=\"https://git.speedie.site/speedie/curload\">source code</a>\n";
 
+    print "\t\t\t<h2>oops i leaked admin tools</h2>\n";
+    print "\t\t\t<form action=\"create.php\" method=\"post\">\n";
+    print "\t\t\t\t<input type=\"text\" name=\"data\" placeholder=\"key name\">\n";
+    print "\t\t\t\t<input type=\"text\" name=\"type\" placeholder=\"type\">\n";
+    print "\t\t\t\t<input type=\"text\" name=\"key\" placeholder=\"admin key\">\n";
+    print "\t\t\t\t<input type=\"text\" name=\"uploads\" placeholder=\"max uploads\">\n";
+    print "\t\t\t\t<input type=\"submit\" value=\"make\">\n";
+    print "\t\t\t</form>\n";
+
     printFooter();
 }
 

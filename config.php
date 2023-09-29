@@ -1,14 +1,17 @@
 <?php
-    $Stylesheet  = "index.css";
-    $Icon        = "favicon.svg";
-    $uploadDir   = "uploads/";
-    $keyFile     = "passwords.txt";
-    $tempKeyFile = "temporary_passwords.txt";
-    $maxFileSize = "100";
-    $sql         = true;
-    $sqlDB       = "curload.db";
-    $storeIP     = true;
-    $storeAgent  = true;
+    $Stylesheet     = "index.css";
+    $Icon           = "favicon.svg";
+    $uploadDir      = "uploads/";
+    $keyFile        = "passwords.txt";
+    $tempKeyFile    = "temporary_passwords.txt";
+    $maxFileSize    = "100";
+    $sql            = true;
+    $sqlDB          = "curload.db";
+    $storeIP        = true;
+    $storeAgent     = true;
+    $storeIssued    = true;
+    $storeLastUsage = true;
+    $dateFormat     = "Y/m/d";
 
     define('CONFIG_FILE', 'config.ini');
 
@@ -28,4 +31,7 @@
     $sqlDB = $configEntries['sqldb'];
     $storeIP = $configEntries['store_ip'];
     $storeAgent = $configEntries['store_user_agent'];
+    $storeIssued = $configEntries['store_issued'];
+    $storeLastUsage = $configEntries['store_last_usage'];
+    $dateFormat = $configEntries['date_format'];
 ?>
