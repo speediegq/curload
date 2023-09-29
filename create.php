@@ -30,7 +30,7 @@
     }
 
     if ($Type == "Admin") {
-        addAdminKey($Data);
+        addAdminKey($Key, $Data, 0);
     } else if ($Type == "Temporary") {
         addTempKey($Key, $Data, $Uploads);
     } else if ($Type == "Key") {

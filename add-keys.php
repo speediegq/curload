@@ -1,97 +1,98 @@
 <?php
-    include "create-table.php";
+/* curload
+ * Simple file uploading using POST requests and temporary keys
+ * Licensed under the GNU Affero General Public License version 3.0
+ */
 
-    function getIPAddress() {
-        include "config.php";
+include "create-table.php";
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            return $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            return $_SERVER['REMOTE_ADDR'];
-        }
+function getIPAddress() {
+    include "config.php";
+
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+function getUserAgent() {
+    return $_SERVER['HTTP_USER_AGENT'];
+}
+
+// TODO: Hash passwords
+function addKey($adminKey, $Value) {
+    include "config.php";
+
+    $Database = createTables($sqlDB);
+    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+
+    $numberOfUploads = 0;
+    $lastUsed = date($dateFormat);
+    $Issued = date($dateFormat);
+    $ip = "";
+    $userAgent = "";
+
+    if ($storeAgent || $storeAgent == "true") {
+        $userAgent = getUserAgent();
     }
 
-    function getUserAgent() {
-        return $_SERVER['HTTP_USER_AGENT'];
+    if ($storeIP || $storeIP == "true") {
+        $ip = getIPAddress();
     }
 
-    // TODO: Hash passwords
-    function addKey($adminKey, $Value) {
-        include "config.php";
+    $Database->exec("INSERT INTO keys(key, numberofuploads, lastused, issued, ip, useragent) VALUES('$Value', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+}
 
-        $Database = createTables($sqlDB);
-        $DatabaseQuery = $Database->query('SELECT * FROM keys');
+function addTempKey($adminKey, $Value, $uploadsLeft) {
+    include "config.php";
 
-        $numberOfUploads = 0;
-        $lastUsed = date($dateFormat);
-        $Issued = date($dateFormat);
-        $ip = "";
-        $userAgent = "";
+    $Database = createTables($sqlDB);
+    $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
 
-        if ($storeAgent || $storeAgent == "true") {
-            $userAgent = getUserAgent();
-        }
+    $numberOfUploads = 0;
+    $lastUsed = date($dateFormat);
+    $Issued = date($dateFormat);
+    $ip = "";
+    $userAgent = "";
 
-        if ($storeIP || $storeIP == "true") {
-            $ip = getIPAddress();
-        }
-
-        $Database->exec("INSERT INTO keys(key, numberofuploads, lastused, issued, ip, useragent) VALUES('$Value', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    if ($storeAgent || $storeAgent == "true") {
+        $userAgent = getUserAgent();
     }
 
-    function addTempKey($adminKey, $Value, $uploadsLeft) {
-        include "config.php";
-
-        $Database = createTables($sqlDB);
-        $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-
-        $numberOfUploads = 0;
-        $lastUsed = date($dateFormat);
-        $Issued = date($dateFormat);
-        $ip = "";
-        $userAgent = "";
-
-        if ($storeAgent || $storeAgent == "true") {
-            $userAgent = getUserAgent();
-        }
-
-        if ($storeIP || $storeIP == "true") {
-            $ip = getIPAddress();
-        }
-
-        if ($storeAgent || $storeAgent == "true") {
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        }
-
-        $Database->exec("INSERT INTO tkeys(key, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Value', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    if ($storeIP || $storeIP == "true") {
+        $ip = getIPAddress();
     }
 
-    // TEMPORARY FUNCTION: TO BE REMOVED
-    function addAdminKey($Value) {
-        include "config.php";
-
-        $Database = createTables($sqlDB);
-        $DatabaseQuery = $Database->query('SELECT * FROM admins');
-
-        $lastUsed = date($dateFormat);
-        $Issued = date($dateFormat);
-        $ip = "";
-        $userAgent = "";
-
-        if ($storeAgent || $storeAgent == "true") {
-            $userAgent = getUserAgent();
-        }
-
-        if ($storeIP || $storeIP == "true") {
-            $ip = getIPAddress();
-        }
-
-        if ($storeAgent || $storeAgent == "true") {
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        }
-
-        $Database->exec("INSERT INTO admins(id, key, lastused, issued, ip, useragent) VALUES('$Value', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    if ($storeAgent || $storeAgent == "true") {
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
     }
+
+    $Database->exec("INSERT INTO tkeys(key, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Value', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+}
+
+function addAdminKey($adminKey, $Value, $Primary) {
+    include "config.php";
+
+    $Database = createTables($sqlDB);
+    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+
+    $numberOfUploads = 0;
+    $lastUsed = date($dateFormat);
+    $Issued = date($dateFormat);
+    $ip = "";
+    $userAgent = "";
+
+    if ($storeAgent || $storeAgent == "true") {
+        $userAgent = getUserAgent();
+    }
+
+    if ($storeIP || $storeIP == "true") {
+        $ip = getIPAddress();
+    }
+
+    $Database->exec("INSERT INTO admins(key, primary, numberofuploads, lastused, issued, ip, useragent) VALUES('$Value', '$Primary', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+}
 ?>
