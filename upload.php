@@ -31,9 +31,10 @@
                 $id = $line['id'];
                 $keyID = $id;
                 $numberOfUploads = $line['numberofuploads'] + 1;
+                    $lastUsed = date($dateFormat);
 
-                $Database->exec("UPDATE keys SET lastused=$lastUsed WHERE id=$id");
-                $Database->exec("UPDATE keys SET numberofuploads=$numberOfUploads WHERE id=$id");
+                $Database->exec("UPDATE keys SET lastused='$lastUsed' WHERE id='$id'");
+                $Database->exec("UPDATE keys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
 
                 if ($storeIP || $storeIP == "true") {
                     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -44,12 +45,12 @@
                         $ip = $_SERVER['REMOTE_ADDR'];
                     }
 
-                    $Database->exec("UPDATE keys SET ip=$ip WHERE id=$id");
+                    $Database->exec("UPDATE keys SET ip='$ip' WHERE id='$id'");
                 }
 
                 if ($storeAgent || $storeAgent == "true") {
                     $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                    $Database->exec("UPDATE keys SET useragent=$userAgent WHERE id=$id");
+                    $Database->exec("UPDATE keys SET useragent='$userAgent' WHERE id='$id'");
                 }
 
                 $Authorized = 1;
@@ -68,9 +69,9 @@
                     $id = $line['id'];
                     $keyID = $id;
 
-                    $Database->exec("UPDATE tkeys SET uploadsleft=$uploadsLeft WHERE id=$id");
-                    $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id=$id");
-                    $Database->exec("UPDATE tkeys SET numberofuploads=$numberOfUploads WHERE id=$id");
+                    $Database->exec("UPDATE tkeys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
+                    $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id='$id'");
+                    $Database->exec("UPDATE tkeys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
 
                     if ($storeIP || $storeIP == "true") {
                         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -81,12 +82,12 @@
                             $ip = $_SERVER['REMOTE_ADDR'];
                         }
 
-                        $Database->exec("UPDATE tkeys SET ip=$ip WHERE id=$id");
+                        $Database->exec("UPDATE tkeys SET ip='$ip' WHERE id='$id'");
                     }
 
                     if ($storeAgent || $storeAgent == "true") {
                         $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                        $Database->exec("UPDATE tkeys SET useragent=$userAgent WHERE id=$id");
+                        $Database->exec("UPDATE tkeys SET useragent='$userAgent' WHERE id='$id'");
                     }
 
                     $Authorized = 1;
@@ -146,7 +147,11 @@
     $destinationFile = $uploadDir . basename($_FILES['file']['name']);
 
     if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
-        $destinationFile = $uploadDir . rand(10000,100000) . "." . strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
+        $fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
+        if (isset($fileExtension)) {
+            $extension = "." . $fileExtension;
+        }
+        $destinationFile = $uploadDir . rand(1000,100000) . $extension;
 
         if (file_exists($destinationFile)) { // wtf
             print "Failed to upload file.";
@@ -160,7 +165,7 @@
         if ($sql || $sql == "true") {
             $lastUsed = date($dateFormat);
             $DatabaseQuery = $Database->query('SELECT * FROM uploads');
-            $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, tempkey) VALUES('$uploadedFile', '$lastUsed', $keyID, $tempKeyUsed)");
+            $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, tempkey) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$tempKeyUsed')");
         }
 
         if ($tempKeyUsed) { // Remove temporary key
