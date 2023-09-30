@@ -4,6 +4,7 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
+$configFile             = "config.ini";
 $Stylesheet             = "index.css";
 $Icon                   = "favicon.svg";
 $uploadDir              = "uploads/";
@@ -25,9 +26,7 @@ $enableTemporaryKeys    = true;
 $enableUploadRemoval    = true;
 $enableKeyUploadRemoval = true;
 
-define('CONFIG_FILE', 'config.ini');
-
-if (!file_exists(CONFIG_FILE)) {
+if (!file_exists($configFile)) {
     return;
 }
 
