@@ -112,7 +112,10 @@ if ($Action == "files") {
 
     $html .= "\t\t\t\t</table>\n";
 } else if ($Action == "keys") {
-    $html .= "\t\t\t\t<p class=\"adminWarning\">Administrator keys are not visible.</p>\n";
+    if ($Primary != 1) {
+        $html .= "\t\t\t\t<p class=\"adminWarning\">Administrator keys are not visible.</p>\n";
+    }
+
     $html .= "\t\t\t\t<table class=\"adminKeyView\">\n";
     $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminID\">ID</th>\n";
