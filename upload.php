@@ -172,7 +172,7 @@ $destinationFile = $uploadDir . basename($_FILES['file']['name']);
 
 // rename file if necessary
 if (!$replaceOriginal || $replaceOriginal == "false") {
-    if (file_exists($destinationFile) && $) { // rename file to distinguish it from existing file
+    if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
         $fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
         if (isset($fileExtension)) {
             $extension = "." . $fileExtension;
