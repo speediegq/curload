@@ -3,6 +3,7 @@
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
  */
+
 include "config.php";
 include "create-table.php";
 
