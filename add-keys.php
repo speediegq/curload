@@ -7,8 +7,6 @@
 include "create-table.php";
 
 function getIPAddress() {
-    include "config.php";
-
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
         return $_SERVER['HTTP_CLIENT_IP'];
     } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -36,6 +34,16 @@ function addKey($adminKey, $Value) {
             break;
         }
     }
+
+    // Make sure no existing key exists with that value
+    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+    while ($line = $DatabaseQuery->fetchArray()) {
+        if ($line['key'] == "$Value") {
+            print "A key with that value already exists.";
+            die();
+        }
+    }
+
     if ($Authorized != 1) {
         print "You are not authorized to perform this action.";
         die();
@@ -79,6 +87,16 @@ function addTempKey($adminKey, $Value, $uploadsLeft) {
             break;
         }
     }
+
+    // Make sure no existing key exists with that value
+    $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
+    while ($line = $DatabaseQuery->fetchArray()) {
+        if ($line['key'] == "$Value") {
+            print "A key with that value already exists.";
+            die();
+        }
+    }
+
     if ($Authorized != 1) {
         print "You are not authorized to perform this action.";
         die();
@@ -122,6 +140,16 @@ function addAdminKey($adminKey, $Value, $Primary) {
             break;
         }
     }
+
+    // Make sure no existing key exists with that value
+    $DatabaseQuery = $Database->query('SELECT * FROM admins');
+    while ($line = $DatabaseQuery->fetchArray()) {
+        if ($line['key'] == "$Value") {
+            print "A key with that value already exists.";
+            die();
+        }
+    }
+
     if ($Authorized != 1) {
         print "You are not authorized to perform this action.";
         die();
