@@ -65,7 +65,7 @@
                 }
             }
 
-            $FileToRemove = $kline['file'];
+            $FileToRemove = $line['file'];
 
             break;
         }
@@ -77,6 +77,6 @@
         die();
     }
 
-    // remove file
-    unlink($FileToRemove);
+    $Database->exec("DELETE FROM uploads WHERE id='$fileID'");
+    unlink(ltrim($FileToRemove, '/'));
 ?>
