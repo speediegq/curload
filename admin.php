@@ -11,6 +11,7 @@ include "create-table.php";
 $Action = "";
 $Authorized = 0;
 $Primary = 0;
+$filterID = -1;
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     header('Location: login.php?redir=admin');
@@ -24,6 +25,12 @@ if (!isset($_REQUEST['action'])) {
     $Action = "files";
 } else {
     $Action = $_REQUEST['action'];
+}
+
+if (!isset($_REQUEST['id'])) {
+    $filterID = -1;
+} else {
+    $filterID = $_REQUEST['id'];
 }
 
 // in case admin keys are disabled
@@ -88,6 +95,7 @@ if ($Action == "files") {
         $Filename = $line['file'];
         $uploadDate = $line['uploaddate'];
         $keyID = $line['keyid'];
+        $keytypeID = $line['keytype'];
 
         if ($line['keytype'] == 0) {
             $keyType = "Key";
@@ -103,7 +111,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"adminID-$ID\">$ID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminFilename\">$Filename</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadDate\">$uploadDate</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyID\">$keyID</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminKeyID\"><a href=\"admin.php?action=keys#id-$keytypeID-$keyID\">$keyID</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove.php?redir=admin&id=$ID\">Remove</a></td>\n";
 
@@ -135,6 +143,11 @@ if ($Action == "files") {
             break;
         }
 
+        // allow filtering
+        if ($line['id'] != $filterID && $filterID != -1) {
+            continue;
+        }
+
         $ID = $line['id'];
         $Key = $line['key'];
         $NumberOfUploads = $line['numberofuploads'];
@@ -154,7 +167,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-2-$ID\">$ID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\">$NumberOfUploads</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
@@ -171,6 +184,10 @@ if ($Action == "files") {
 
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
+        if ($line['id'] != $filterID && $filterID != -1) {
+            continue;
+        }
+
         $ID = $line['id'];
         $Key = $line['key'];
         $NumberOfUploads = $line['numberofuploads'];
@@ -186,7 +203,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-0-$ID\">$ID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\">$NumberOfUploads</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
@@ -199,6 +216,10 @@ if ($Action == "files") {
 
     $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
     while ($line = $DatabaseQuery->fetchArray()) {
+        if ($line['id'] != $filterID && $filterID != -1) {
+            continue;
+        }
+
         $ID = $line['id'];
         $Key = $line['key'];
         $NumberOfUploads = $line['numberofuploads'];
@@ -214,7 +235,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-1-$ID\">$ID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\">$NumberOfUploads</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
