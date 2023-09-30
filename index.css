@@ -9,7 +9,7 @@
 }
 
 .bar img {
-    transform: translate(0, +30%);
+    float: left;
     padding-right: 5px;
 }
 
@@ -49,11 +49,16 @@ footer {
     padding-left: 2px;
 }
 
+.error {
+    color: #ff0000;
+}
+
 .content {
 	color: #f0eee4;
     padding: 5px;
     max-width: 1000px;
     margin: auto;
+    text-align: center;
 }
 
 a {

@@ -4,7 +4,7 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
-function printHead($html) {
+function printHeader($html) {
     include "config.php";
 
     $html .= "<!DOCTYPE html>\n";
@@ -18,6 +18,12 @@ function printHead($html) {
     if (file_exists($javaScript)) $html .= "\t\t<script src=\"$javaScript\"></script>\n";
 
     $html .= "\t\t<title>$instanceName</title>\n";
+    $html .= "\t\t<div class=\"bar\">\n";
+    $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
+    if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
+    $html .= "\t\t\t\t$instanceName\n";
+    $html .= "\t\t\t</span>\n";
+    $html .= "\t\t</div>\n";
     $html .= "\t</head>\n";
     $html .= "\t<body>\n";
     $html .= "\t\t<div class=\"content\">\n";

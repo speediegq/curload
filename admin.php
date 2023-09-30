@@ -18,7 +18,7 @@ $Database = createTables($sqlDB);
 $DatabaseQuery = $Database->query('SELECT * FROM admins');
 
 $html = "";
-$html = printHead($html);
+$html = printHeader($html);
 
 if (isset($_REQUEST['key'])) {
     $Key = $_REQUEST['key'];
