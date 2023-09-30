@@ -6,6 +6,7 @@
 
 $configFile             = "config.ini";
 $Stylesheet             = "index.css";
+$javaScript             = "index.js";
 $Icon                   = "favicon.svg";
 $uploadDir              = "uploads/";
 $maxFileSize            = "100";
@@ -52,4 +53,5 @@ $enableAdminKeys = $configEntries['enable_admin_keys'];
 $enableTemporaryKeys = $configEntries['enable_temporary_keys'];
 $enableUploadRemoval = $configEntries['enable_upload_removal'];
 $enableKeyUploadRemoval = $configEntries['enable_key_upload_removal'];
+$javaScript = $configEntries['javascript'];
 ?>
