@@ -105,6 +105,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadDate\">$uploadDate</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyID\">$keyID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove.php?redir=admin&id=$ID\">Remove</a></td>\n";
 
         $html .= "\t\t\t\t\t</tr>\n";
     }

@@ -7,10 +7,11 @@
 include "config.php";
 include "create-table.php";
 
-if (isset($_REQUEST['key'])) {
-    $Key = $_REQUEST['key'];
-} else {
-    print "No key specified.";
+if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
+    header('Location: login.php?redir=admin');
+    die();
+} else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
+    header('Location: /');
     die();
 }
 
@@ -26,11 +27,32 @@ if (!$enableUploadRemoval || $enableUploadRemoval == "false") {
     die();
 }
 
+$Redirect = "";
 $FileToRemove = "";
 $AuthorizedRemoval = 0;
 $fileUploadedByPrimary = 0;
 
+if (isset($_REQUEST['redir'])) {
+    $Redirect = $_REQUEST['redir'];
+}
+
 $Database = createTables($sqlDB);
+$DatabaseQuery = $Database->query('SELECT * FROM admins');
+
+while ($line = $DatabaseQuery->fetchArray()) {
+    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+        $AuthorizedRemoval = 1;
+        $AdminIsPrimary = $line['primaryadmin'];
+        break;
+    }
+}
+
+// not authorized
+if ($AuthorizedRemoval != 1) {
+    header('Location: /');
+    die();
+}
+
 $DatabaseQuery = $Database->query('SELECT * FROM uploads');
 
 while ($line = $DatabaseQuery->fetchArray()) {
@@ -84,4 +106,11 @@ if ($AuthorizedRemoval != 1) {
 
 $Database->exec("DELETE FROM uploads WHERE id='$fileID'");
 unlink(ltrim($FileToRemove, '/'));
+
+if ($Redirect == "admin") {
+    header("Location: admin.php?action=files");
+} else {
+    header("Location: /");
+}
+
 ?>
