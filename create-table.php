@@ -11,6 +11,7 @@ function createTables($sqlDB) {
      * id (INTEGER PRIMARY KEY)
      * key (TEXT)
      * primaryadmin (INT)
+     * numberofuploads (INT)
      * lastused (TEXT)
      * issued (TEXT)
      * ip (TEXT)

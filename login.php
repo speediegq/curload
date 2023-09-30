@@ -10,6 +10,7 @@ include "core.php";
 
 $Authorized = 0;
 $KeyType = 0;
+$Redirect = "";
 
 if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];

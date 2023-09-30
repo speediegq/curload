@@ -7,10 +7,11 @@
 include "config.php";
 include "create-table.php";
 
-if (isset($_REQUEST['key'])) {
-    $Key = $_REQUEST['key'];
-} else {
-    print "No key specified.";
+if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
+    header('Location: login.php?redir=admin');
+    die();
+} else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
+    header('Location: /');
     die();
 }
 
@@ -25,20 +26,27 @@ $AdminIsPrimary = 0;
 $KeyIsPrimary = 0;
 $AuthorizedRemoval = 0;
 $Removed = 0;
+$Redirect = "";
+
+if (isset($_REQUEST['redir'])) {
+    $Redirect = $_REQUEST['redir'];
+}
 
 $Database = createTables($sqlDB);
-
-// check if the key we passed is an admin key and if it's a primary admin key
 $DatabaseQuery = $Database->query('SELECT * FROM admins');
-while ($line = $DatabaseQuery->fetchArray()) {
-    if ($Key == $line['key']) {
-        if ($line['primaryadmin'] == 1) {
-            $AdminIsPrimary = 1;
-        }
 
+while ($line = $DatabaseQuery->fetchArray()) {
+    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
         $AuthorizedRemoval = 1;
+        $AdminIsPrimary = $line['primaryadmin'];
         break;
     }
+}
+
+// not authorized
+if ($AuthorizedRemoval != 1) {
+    header('Location: /');
+    die();
 }
 
 $DatabaseQuery = $Database->query('SELECT * FROM keys');
@@ -86,9 +94,10 @@ while ($line = $DatabaseQuery->fetchArray()) {
     }
 }
 
-if ($AuthorizedRemoval != 1) {
-    print "You aren't authorized to perform this action.";
-    die();
+if ($Redirect == "admin") {
+    header("Location: admin.php?action=keys");
+} else {
+    header("Location: /");
 }
 
 ?>
