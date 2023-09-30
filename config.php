@@ -31,7 +31,7 @@ if (!file_exists($configFile)) {
 }
 
 /* load config file */
-$configEntries = parse_ini_file(CONFIG_FILE);
+$configEntries = parse_ini_file($configFile);
 $Stylesheet = $configEntries['css'];
 $Icon = $configEntries['favicon'];
 $uploadDir = $configEntries['upload_dir'];
