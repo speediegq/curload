@@ -34,7 +34,7 @@ if (!file_exists($configFile)) {
     return;
 }
 
-/* load config file */
+// load config file
 $configEntries = parse_ini_file($configFile);
 $Stylesheet = $configEntries['css'];
 $Icon = $configEntries['favicon'];
@@ -60,4 +60,6 @@ $enableUploadRemoval = $configEntries['enable_upload_removal'];
 $enableKeyUploadRemoval = $configEntries['enable_key_upload_removal'];
 $cookieName = $configEntries['cookie_name'];
 $javaScript = $configEntries['javascript'];
+
+$cookieTypeName = "$cookieName" . "_type";
 ?>

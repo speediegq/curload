@@ -10,7 +10,6 @@ include "core.php";
 
 $Authorized = 0;
 $KeyType = 0;
-$Redirect = "";
 
 if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];
@@ -20,11 +19,12 @@ if (isset($_REQUEST['redir'])) {
 if (isset($_COOKIE[$cookieName])) {
     if (isset($_REQUEST['logout']) && $_REQUEST['logout'] == "true") {
         setcookie($cookieName, "", 0);
+        setcookie($cookieTypeName, "", 0);
         header('Location: login.php');
         die();
     }
 
-    if ($Redirect == "index" || ($Redirect == "admin" && $KeyType != 3) || $Redirect == "") {
+    if ($Redirect == "index" || ($Redirect == "admin" && $_COOKIE[$cookieTypeName] != 2) || $Redirect == "") {
         header('Location: /');
         die();
     } else if ($Redirect == "admin") {
@@ -153,24 +153,22 @@ if (isset($_REQUEST['key'])) {
         }
     }
 
-    if ($Authorized == 0) {
-        header('Location: login.php?e=true');
+    if ($Authorized != 1) {
+        if ($Redirect != "") { // just so we can try again and still be redirected to the right place
+            header("Location: login.php?e=true&redir=$Redirect");
+        } else {
+            header("Location: login.php?e=true");
+        }
         die();
     }
 
     setcookie($cookieName, $Key);
+    setcookie($cookieTypeName, $KeyType);
 
-    if (!isset($_COOKIE[$cookieName])) {
-        header('Location: /');
-        die();
-    }
-
-    if ($Redirect == "index" || ($Redirect == "admin" && $KeyType != 3)) {
-        header('Location: /');
-        die();
+    if ($Redirect != "") { // just so we can try again and still be redirected to the right place
+        header("Location: login.php?e=true&redir=$Redirect");
     } else {
-        header('Location: admin.php');
-        die();
+        header("Location: login.php?e=true");
     }
 
     die();
@@ -183,6 +181,7 @@ if (isset($_REQUEST['key'])) {
     $html .= "\t\t\t\t<p>Enter your login key to continue.</p>\n";
     $html .= "\t\t\t\t<form action=\"login.php\">\n";
     $html .= "\t\t\t\t\t<input type=\"password\" name=\"key\" placeholder=\"Login key\">\n";
+    if (isset($Redirect)) $html .= "\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Login\">\n";
     $html .= "\t\t\t\t</form>\n";
 

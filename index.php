@@ -16,10 +16,6 @@ function main() {
     $html .= "\t\t\t<p>Max file size: $maxFileSize MB</p>\n";
     $html .= "\t\t\t<a href=\"https://git.speedie.site/speedie/curload\">source code</a>\n";
 
-    if (isset($_COOKIE[$cookieName])) {
-        $html .= "\t\t\t<p>Cookie found, how awesome is that?</p>\n";
-    }
-
     $html = printFooter($html);
 
     print "$html";
