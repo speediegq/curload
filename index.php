@@ -14,7 +14,7 @@ function main() {
     $html = printHeader($html);
 
     $html .= "\t\t\t<h1>$instanceName</h1>\n";
-    $html .= "\t\t\t\t<p>$instanceDescription</h1>\n";
+    $html .= "\t\t\t\t<p>$instanceDescription</p>\n";
 
     if (isset($_REQUEST['e'])) {
         $Error = $_REQUEST['e'];
@@ -38,8 +38,6 @@ function main() {
             $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
         }
     }
-
-    $html .= "\t\t\t<a href=\"https://git.speedie.site/speedie/curload\">source code</a>\n";
 
     $html = printFooter($html);
 

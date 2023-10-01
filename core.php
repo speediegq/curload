@@ -47,6 +47,11 @@ function printFooter($html) {
 
     $html .= "\t\t</div>\n";
     $html .= "\t</body>\n";
+    $html .= "\t<footer>\n";
+    $html .= "\t\t<span id='footerSpan' class='footer'>\n";
+    $html .= "\t\t\t<p class='footerText' id='footerText'>$footerText</p>\n";
+    $html .= "\t\t</span>\n";
+    $html .= "\t</footer>\n";
     $html .= "</html>\n";
 
     return "$html";
