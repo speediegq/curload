@@ -98,6 +98,10 @@ a:hover {
 }
 
 input {
+    font-size: 12pt;
+    font-family: Monospace;
+    font-weight: normal;
+
     padding-top: 2px;
     padding-bottom: 2px;
     border-color: #363636;
