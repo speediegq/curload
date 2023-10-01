@@ -7,8 +7,14 @@
 include "config.php";
 include "create-table.php";
 
+$WebInterface = 1;
+
 if (isset($_REQUEST['key'])) {
     $Key = $_REQUEST['key'];
+    $WebInterface = 0;
+} else if (isset($_COOKIE[$cookieName])) {
+    $Key = $_COOKIE[$cookieName];
+    $WebInterface = 1;
 } else {
     print "No key specified.";
     die();
@@ -22,8 +28,13 @@ $keyID = 0;
 $self = dirname($_SERVER['PHP_SELF']);
 
 if (!isset($_FILES['file']['name'])) {
-    print "You didn't specify a file.";
-    die();
+    if ($WebInterface == 0) {
+        print "You didn't specify a file.";
+        die();
+    } else {
+        header("Location: /?e=file");
+        die();
+    }
 }
 
 // init database
@@ -153,14 +164,24 @@ if (!$publicUploading || $publicUploading == "false") {
 
     // Not an authorized key
     if ($Authorized == 0) {
-        print "Not authorized: Key '$Key' is invalid.";
-        die();
+        if ($WebInterface == 0) {
+            print "Not authorized: Your key is invalid.";
+            die();
+        } else {
+            header("Location: /?e=key");
+            die();
+        }
     }
 }
 
 if ($_FILES['file']['size'] > $uploadLimit && $uploadLimit > 0) {
-    print "File is too big. Max file size is $maxFileSize" . "MB";
-    die();
+    if ($WebInterface == 0) {
+        print "File is too big. Max file size is $maxFileSize" . "MB";
+        die();
+    } else {
+        header("Location: /?e=size");
+        die();
+    }
 }
 
 // check if file is too big to be uploaded
@@ -183,8 +204,13 @@ if (!$replaceOriginal || $replaceOriginal == "false") {
         }
 
         if (file_exists($destinationFile)) { // wtf
-            print "Failed to upload file.";
-            die();
+            if ($WebInterface == 0) {
+                print "Upload failed.";
+                die();
+            } else {
+                header("Location: /?e=wtf");
+                die();
+            }
         }
     }
 }
@@ -196,15 +222,25 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
     $DatabaseQuery = $Database->query('SELECT * FROM uploads');
     $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, keytype) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$keyType')");
 
-    print "$uploadedFile";
+    if ($WebInterface == 0) {
+        print "$uploadedFile";
+    } else {
+        header("Location: $uploadedFile");
+    }
 
     if (isset($_REQUEST['web'])) { // redirect back to index
-        print "<p><a href=\"$uploadedFile\">Your link</a></p>\n";
+        header("Redirect: $uploadedFile");
         die();
     }
 } else {
-    print "Failed to upload file.";
-    print $_FILES['file']['error'];
-    die();
+    if (file_exists($destinationFile)) { // wtf
+        if ($WebInterface == 0) {
+            print "Upload failed.";
+            die();
+        } else {
+            header("Location: /?e=wtf");
+            die();
+        }
+    }
 }
 ?>

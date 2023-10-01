@@ -8,6 +8,14 @@
     width: 100%;
 }
 
+#title {
+    color: #f0eee4;
+}
+
+#administration {
+    color: #ffc0cb;
+}
+
 .bar img {
     float: left;
     padding-right: 5px;
