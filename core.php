@@ -89,6 +89,8 @@ function printFileUploadForm($html, $Error) {
             $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
         }
     }
+
+    return "$html";
 }
 
 ?>
