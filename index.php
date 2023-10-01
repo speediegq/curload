@@ -24,7 +24,7 @@ $html .= "\t\t\t\t<p>$instanceDescription</p>\n";
 
 // If logged in ...
 if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
-    $html .= printFileUploadForm($html, $Error);
+    $html = printFileUploadForm($html, $Error);
 } else {
     $html .= "\t\t\t\t<p>To upload a file, <a href=\"login.php\">log in using your key</a> and select a file to upload. After uploading, you will receive a link to the file stored on the servers.</p>\n";
 }
