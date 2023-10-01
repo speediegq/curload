@@ -1,0 +1,4 @@
+<Files "curload.sql">
+    Order Allow,Deny
+    Deny from all
+</Files>

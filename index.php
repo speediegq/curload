@@ -4,46 +4,36 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
-function main() {
-    include "config.php";
-    include "core.php";
+include "config.php"; /* config.php includes configuration options */
+include "core.php"; /* core.php includes core functions */
 
-    $Error = "";
-    $html = "";
+// We declare these variables first
+$Error = "";
+$html = "";
 
-    $html = printHeader($html);
+// If an error was reported, assign it to variable $Error
+if (isset($_REQUEST['e'])) $Error = $_REQUEST['e'];
 
-    $html .= "\t\t\t<h1>$instanceName</h1>\n";
-    $html .= "\t\t\t\t<p>$instanceDescription</p>\n";
+// Print some HTML, bar and a basic heading and description paragraph
+// \t - Tab character
+// \n - New line character
+// .= - Append to variable
+$html = printHeader($html);
+$html .= "\t\t\t<h1>$instanceName</h1>\n";
+$html .= "\t\t\t\t<p>$instanceDescription</p>\n";
 
-    if (isset($_REQUEST['e'])) {
-        $Error = $_REQUEST['e'];
-    }
-
-    if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
-        $html .= "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">\n";
-        $html .= "\t\t\t\t<input type=\"file\" name=\"file\" id=\"file\">\n";
-        $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" name=\"web\">\n";
-        $html .= "\t\t\t</form>\n";
-        $html .= "\t\t\t<p>Max file size: $maxFileSize MB</p>\n";
-
-        // error handling
-        if ($Error == "file") {
-            $html .= "\t\t\t<p class=\"error\">No file specified.</p>\n";
-        } else if ($Error == "size") {
-            $html .= "\t\t\t<p class=\"error\">File is too big.</p>\n";
-        } else if ($Error == "key") {
-            $html .= "\t\t\t<p class=\"error\">Invalid key. WTF?</p>\n";
-        } else if ($Error == "wtf") {
-            $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
-        }
-    }
-
-    $html = printFooter($html);
-
-    print "$html";
+// If logged in ...
+if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
+    $html .= printFileUploadForm($html, $Error);
+} else {
+    $html .= "\t\t\t\t<p>To upload a file, <a href=\"login.php\">log in using your key</a> and select a file to upload. After uploading, you will receive a link to the file stored on the servers.</p>\n";
+    $html .= "\t\t\t\t<p>You can also upload a file using <code>curl</code> (or any POST request):<br><br><code>curl -F \"file=@myfile\" -F \"key=mykey\" \"https://dl.speedie.site/upload.php\"</code>.</p>\n";
 }
 
-main();
+// End the content div and print footer
+$html = printFooter($html);
+
+// Finally print it all out at once
+print "$html";
 
 ?>

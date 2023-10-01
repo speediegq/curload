@@ -24,14 +24,24 @@ function printHeader($html) {
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
 
     if (!isset($_COOKIE[$cookieName])) {
-        $html .= "\t\t\t\t<small id='login'><a href=\"login.php\">Log in</a></small>\n";
+        $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
     } else {
-        $html .= "\t\t\t\t<small id='logout'><a href=\"login.php?logout=true\">Log out</a></small>\n";
+        $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
     }
 
     if (isset($_COOKIE[$cookieTypeName]) && $_COOKIE[$cookieTypeName] == 2) {
         $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
     }
+
+     foreach (glob('*.php') as $file) {
+         if (!file_exists("$file".".name")) {
+             continue;
+         }
+
+         $name = file_get_contents("$file".".name");
+         $name = rtrim($name, "\r\n");
+         $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
+     }
 
     $html .= "\t\t\t</span>\n";
     $html .= "\t\t</div>\n";
@@ -55,6 +65,30 @@ function printFooter($html) {
     $html .= "</html>\n";
 
     return "$html";
+}
+
+function printFileUploadForm($html, $Error) {
+    include "config.php";
+
+    // print the form
+    if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
+        $html .= "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">\n";
+        $html .= "\t\t\t\t<input type=\"file\" name=\"file\" id=\"file\">\n";
+        $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" name=\"web\">\n";
+        $html .= "\t\t\t</form>\n";
+        $html .= "\t\t\t<p id='maxFileSize'>Max file size: $maxFileSize MB</p>\n";
+
+        // error handling
+        if ($Error == "file") {
+            $html .= "\t\t\t<p class=\"error\">No file specified.</p>\n";
+        } else if ($Error == "size") {
+            $html .= "\t\t\t<p class=\"error\">File is too big.</p>\n";
+        } else if ($Error == "key") {
+            $html .= "\t\t\t<p class=\"error\">Invalid key. WTF?</p>\n";
+        } else if ($Error == "wtf") {
+            $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
+        }
+    }
 }
 
 ?>
