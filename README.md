@@ -19,7 +19,10 @@ plugin if you want to use Apache.
 
 1. Set up a web server with php and sqlite3
 2. Point it to `index.php`
-3. Create a admin primary key using `sqlite3`
+
+When no admin key is set up, you'll be prompted to create a primary admin key.
+The primary admin key is able to do absolutely everything, while normal admin
+keys are able to do everything except view and modify other administrators.
 
 ## Hacking
 

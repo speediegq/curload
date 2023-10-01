@@ -23,34 +23,47 @@ function getUserAgent() {
 
 $Redirect = "";
 $uploadsLeft = 1;
-$AuthorizedRemoval = 0;
+$AuthorizedCreation = 0;
 $AdminIsPrimary = 0;
+$primary = 0;
 
 if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];
 }
 
-if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
-    header('Location: login.php?redir=admin');
-    die();
-} else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
-    header('Location: /');
-    die();
-}
-
 $Database = createTables($sqlDB);
 $DatabaseQuery = $Database->query('SELECT * FROM admins');
 
+$adminExists = 0;
+while ($line = $DatabaseQuery->fetchArray()) {
+    $adminExists = 1;
+    break;
+}
+
+if ($adminExists != 1) {
+    $primary = 1;
+} else {
+    if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
+        header('Location: login.php?redir=admin');
+        die();
+    } else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
+        header('Location: /');
+        die();
+    }
+
+    $primary = 0;
+}
+
 while ($line = $DatabaseQuery->fetchArray()) {
     if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
-        $AuthorizedRemoval = 1;
+        $AuthorizedCreation = 1;
         $AdminIsPrimary = $line['primaryadmin'];
         break;
     }
 }
 
 // not authorized
-if ($AuthorizedRemoval != 1) {
+if ($AuthorizedCreation != 1 && $primary != 1) {
     header('Location: /');
     die();
 }
@@ -60,6 +73,8 @@ if (isset($_REQUEST['data']) && $_REQUEST['data'] != "") {
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=data");
+    } else if ($Redirect == "setup") {
+        header("Location: setup.php?e=data");
     } else {
         header("Location: /");
     }
@@ -72,6 +87,8 @@ if (isset($_REQUEST['type']) && $_REQUEST['type'] != "") {
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=type");
+    } else if ($Redirect == "setup") {
+        header("Location: setup.php?e=type");
     } else {
         header("Location: /");
     }
@@ -92,6 +109,8 @@ if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
 if (($_REQUEST['uploadsleft'] == 0 || !isset($_REQUEST['uploadsleft'])) && $Type == "Temporary") {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=uploads");
+    } else if ($Redirect == "uploads") {
+        header("Location: setup.php?e=type");
     } else {
         header("Location: /");
     }
@@ -100,9 +119,11 @@ if (($_REQUEST['uploadsleft'] == 0 || !isset($_REQUEST['uploadsleft'])) && $Type
 }
 
 if ($Type == "Admin") {
-    if ($AdminIsPrimary != 1) {
+    if ($AdminIsPrimary != 1 && $primary != 1) {
         if ($Redirect == "admin") {
             header("Location: admin.php?action=create&e=denied");
+        } else if ($Redirect == "setup") {
+            header("Location: setup.php?e=denied");
         } else {
             header("Location: /");
         }
@@ -113,9 +134,11 @@ if ($Type == "Admin") {
     $DatabaseQuery = $Database->query('SELECT * FROM admins');
 
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data") {
+        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
             if ($Redirect == "admin") {
                 header("Location: admin.php?action=create&e=exists");
+            } else if ($Redirect == "setup") {
+                header("Location: setup.php?e=exists");
             } else {
                 header("Location: /");
             }
@@ -146,13 +169,15 @@ if ($Type == "Admin") {
         $ip = getIPAddress();
     }
 
-    $Database->exec("INSERT INTO admins(key, primaryadmin, numberofuploads, lastused, issued, ip, useragent) VALUES('$Data', '0', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    $Database->exec("INSERT INTO admins(key, primaryadmin, numberofuploads, lastused, issued, ip, useragent) VALUES('$Data', '$primary', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
 } else if ($Type == "Temporary") {
     $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data") {
+        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
             if ($Redirect == "admin") {
                 header("Location: admin.php?action=create&e=exists");
+            } else if ($Redirect == "setup") {
+                header("Location: setup.php?e=exists");
             } else {
                 header("Location: /");
             }
@@ -187,9 +212,11 @@ if ($Type == "Admin") {
 } else if ($Type == "Key") {
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data") {
+        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
             if ($Redirect == "admin") {
                 header("Location: admin.php?action=create&e=exists");
+            } else if ($Redirect == "setup") {
+                header("Location: setup.php?e=exists");
             } else {
                 header("Location: /");
             }
@@ -224,6 +251,8 @@ if ($Type == "Admin") {
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=type");
+    } else if ($Redirect == "setup") {
+        header("Location: setup.php?e=type");
     } else {
         header("Location: /");
     }

@@ -93,4 +93,22 @@ function printFileUploadForm($html, $Error) {
     return "$html";
 }
 
+function checkIfAdminExists() {
+    include "config.php";
+    include "create-table.php";
+
+    $adminExists = 0;
+
+    $Database = createTables($sqlDB);
+    $DatabaseQuery = $Database->query('SELECT * FROM admins');
+
+    $adminExists = 0;
+    while ($line = $DatabaseQuery->fetchArray()) {
+        $adminExists = 1;
+        break;
+    }
+
+    return $adminExists;
+}
+
 ?>

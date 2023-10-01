@@ -25,7 +25,6 @@ $Authorized = 0;
 $keyType = 0;
 $uploadLimit = $maxFileSize * 1000000;
 $keyID = 0;
-$self = dirname($_SERVER['PHP_SELF']);
 
 if (!isset($_FILES['file']['name']) || $_FILES['file']['name'] == "") {
     if ($WebInterface == 0) {

@@ -14,6 +14,12 @@ $html = "";
 // If an error was reported, assign it to variable $Error
 if (isset($_REQUEST['e'])) $Error = $_REQUEST['e'];
 
+// Check if we have an admin
+if (!checkIfAdminExists()) {
+    header("Location: setup.php");
+    die();
+}
+
 // Print some HTML, bar and a basic heading and description paragraph
 // \t - Tab character
 // \n - New line character
