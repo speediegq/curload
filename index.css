@@ -97,7 +97,7 @@ a:hover {
     text-decoration: underline;
 }
 
-input {
+input, select {
     font-size: 12pt;
     font-family: Monospace;
     font-weight: normal;

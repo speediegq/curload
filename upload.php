@@ -27,7 +27,7 @@ $uploadLimit = $maxFileSize * 1000000;
 $keyID = 0;
 $self = dirname($_SERVER['PHP_SELF']);
 
-if (!isset($_FILES['file']['name'])) {
+if (!isset($_FILES['file']['name']) || $_FILES['file']['name'] == "") {
     if ($WebInterface == 0) {
         print "You didn't specify a file.";
         die();
