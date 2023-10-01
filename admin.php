@@ -220,7 +220,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
 
         if ($Primary == 1 && $line['primaryadmin'] != 1) { // primary admins cannot be removed
-            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID\">Remove</a></td>\n";
+            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
         }
 
         $html .= "\t\t\t\t\t</tr>\n";
@@ -254,7 +254,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID\">Remove</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=0\">Remove</a></td>\n";
         $html .= "\t\t\t\t\t</tr>\n";
     }
 
@@ -286,7 +286,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID\">Remove</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=1\">Remove</a></td>\n";
         $html .= "\t\t\t\t\t</tr>\n";
     }
 

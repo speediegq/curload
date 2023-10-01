@@ -15,6 +15,14 @@ if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     die();
 }
 
+$AdminIsPrimary = 0;
+$KeyIsPrimary = 0;
+$AuthorizedRemoval = 0;
+$Removed = 0;
+$Redirect = "";
+$id = 0;
+$type = 0;
+
 if (isset($_REQUEST['id'])) {
     $id = $_REQUEST['id'];
 } else {
@@ -22,11 +30,12 @@ if (isset($_REQUEST['id'])) {
     die();
 }
 
-$AdminIsPrimary = 0;
-$KeyIsPrimary = 0;
-$AuthorizedRemoval = 0;
-$Removed = 0;
-$Redirect = "";
+if (isset($_REQUEST['type'])) {
+    $type = $_REQUEST['type'];
+} else {
+    print "No type specified, is not safe to delete.";
+    die();
+}
 
 if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];
@@ -51,6 +60,7 @@ if ($AuthorizedRemoval != 1) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM keys');
 while ($line = $DatabaseQuery->fetchArray()) {
+    if ($type != 0) break;
     if ($line['id'] == $id && $line['id'] != "" && $id != "") { // passed ID is a key that exists
         if ($AuthorizedRemoval == 1) {
             $Database->exec("DELETE FROM keys WHERE id='$id'");
@@ -66,6 +76,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
 while ($line = $DatabaseQuery->fetchArray()) {
+    if ($type != 1) break;
     if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1) { // passed ID is a key that exists
         if ($AuthorizedRemoval == 1) {
             $Database->exec("DELETE FROM tkeys WHERE id='$id'");
@@ -81,6 +92,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM admins');
 while ($line = $DatabaseQuery->fetchArray()) {
+    if ($type != 2) break;
     if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1 && $line['primaryadmin'] != 1) { // passed ID is a key that exists
         if ($AuthorizedRemoval == 1 && $AdminIsPrimary == 1) { // in order to delete an admin key you must be a primary admin
             $Database->exec("DELETE FROM admins WHERE id='$id'");
