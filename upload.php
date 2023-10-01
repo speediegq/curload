@@ -15,7 +15,7 @@ if (isset($_REQUEST['key'])) {
 } else if (isset($_COOKIE[$cookieName])) {
     $Key = $_COOKIE[$cookieName];
     $WebInterface = 1;
-} else {
+} else if (!$publicUploading || $publicUploading == "false") {
     print "No key specified.";
     die();
 }
@@ -37,10 +37,10 @@ if (!isset($_FILES['file']['name']) || $_FILES['file']['name'] == "") {
     }
 }
 
+$Database = createTables($sqlDB);
+
 // init database
 if (!$publicUploading || $publicUploading == "false") {
-    $Database = createTables($sqlDB);
-
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {

@@ -20,7 +20,7 @@ function main() {
         $Error = $_REQUEST['e'];
     }
 
-    if (isset($_COOKIE[$cookieTypeName])) {
+    if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
         $html .= "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">\n";
         $html .= "\t\t\t\t<input type=\"file\" name=\"file\" id=\"file\">\n";
         $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" name=\"web\">\n";

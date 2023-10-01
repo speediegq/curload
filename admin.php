@@ -12,7 +12,7 @@ $Action = "";
 $Authorized = 0;
 $Primary = 0;
 $filterID = -1;
-$Error = 0;
+$Error = "";
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     header('Location: login.php?redir=admin');
@@ -35,7 +35,7 @@ if (!isset($_REQUEST['id'])) {
 }
 
 if (!isset($_REQUEST['e'])) {
-    $Error = 0;
+    $Error = "";
 } else {
     $Error = $_REQUEST['e'];
 }
