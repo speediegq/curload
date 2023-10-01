@@ -54,6 +54,7 @@ if ($adminExists != 1) {
     $primary = 0;
 }
 
+$DatabaseQuery = $Database->query('SELECT * FROM admins');
 while ($line = $DatabaseQuery->fetchArray()) {
     if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
         $AuthorizedCreation = 1;
