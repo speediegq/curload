@@ -43,6 +43,10 @@ footer {
     color: #ff0000;
 }
 
+.adminError {
+    color: #ff0000;
+}
+
 .content {
 	color: #f0eee4;
     padding: 5px;
@@ -67,6 +71,10 @@ footer {
     padding-left: 10px;
     padding-right: 10px;
     background-color: #363636;
+}
+
+.adminCreateForm {
+    padding: 10px;
 }
 
 .adminWarning {

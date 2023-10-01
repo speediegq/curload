@@ -122,10 +122,10 @@ if (!$publicUploading || $publicUploading == "false") {
                 $id = $line['id'];
                 $keyID = $id;
                 $numberOfUploads = $line['numberofuploads'] + 1;
-                    $lastUsed = date($dateFormat);
+                $lastUsed = date($dateFormat);
 
-                $Database->exec("UPDATE keys SET lastused='$lastUsed' WHERE id='$id'");
-                $Database->exec("UPDATE keys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+                $Database->exec("UPDATE admins SET lastused='$lastUsed' WHERE id='$id'");
+                $Database->exec("UPDATE admins SET numberofuploads='$numberOfUploads' WHERE id='$id'");
 
                 if ($storeIP || $storeIP == "true") {
                     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -136,12 +136,12 @@ if (!$publicUploading || $publicUploading == "false") {
                         $ip = $_SERVER['REMOTE_ADDR'];
                     }
 
-                    $Database->exec("UPDATE keys SET ip='$ip' WHERE id='$id'");
+                    $Database->exec("UPDATE admins SET ip='$ip' WHERE id='$id'");
                 }
 
                 if ($storeAgent || $storeAgent == "true") {
                     $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                    $Database->exec("UPDATE keys SET useragent='$userAgent' WHERE id='$id'");
+                    $Database->exec("UPDATE admins SET useragent='$userAgent' WHERE id='$id'");
                 }
 
                 $Authorized = 1;
@@ -195,12 +195,6 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
     $lastUsed = date($dateFormat);
     $DatabaseQuery = $Database->query('SELECT * FROM uploads');
     $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, keytype) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$keyType')");
-
-    if ($keyType == 1) { // Remove temporary key
-        $file = file_get_contents($tempKeyFile);
-        $file = preg_replace("/\b$Key\b/", "", $file);
-        file_put_contents($tempKeyFile, $file);
-    }
 
     print "$uploadedFile";
 

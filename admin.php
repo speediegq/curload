@@ -12,6 +12,7 @@ $Action = "";
 $Authorized = 0;
 $Primary = 0;
 $filterID = -1;
+$Error = 0;
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     header('Location: login.php?redir=admin');
@@ -31,6 +32,12 @@ if (!isset($_REQUEST['id'])) {
     $filterID = -1;
 } else {
     $filterID = $_REQUEST['id'];
+}
+
+if (!isset($_REQUEST['e'])) {
+    $Error = 0;
+} else {
+    $Error = $_REQUEST['e'];
 }
 
 // in case admin keys are disabled
@@ -75,6 +82,12 @@ if ($Action == "keys") {
     $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=keys\">Keys</a>\n";
 }
 
+if ($Action == "create") {
+    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=create\" id='sel'>Create</a>\n";
+} else {
+    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=create\">Create</a>\n";
+}
+
 $html .= "\t\t\t\t\t</span>\n";
 $html .= "\t\t\t\t</div>\n";
 
@@ -109,7 +122,7 @@ if ($Action == "files") {
 
         $html .= "\t\t\t\t\t<tr class=\"adminFileView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"adminID-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminFilename\">$Filename</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminFilename\"><a href=\"$Filename\">$Filename</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadDate\">$uploadDate</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyID\"><a href=\"admin.php?action=keys#id-$keytypeID-$keyID\">$keyID</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
@@ -119,6 +132,37 @@ if ($Action == "files") {
     }
 
     $html .= "\t\t\t\t</table>\n";
+} else if ($Action == "create") {
+    $html .= "\t\t\t\t<form class=\"adminCreateForm\" action=\"create.php?redir=admin\" method=\"post\">\n";
+    $html .= "\t\t\t\t\t<label for=\"type\">Type</label>\n";
+    $html .= "\t\t\t\t\t<select name=\"type\" required>\n";
+
+    if ($Primary == 1) {
+        $html .= "\t\t\t\t\t\t<option value=\"Admin\">Administrator</option>\n";
+    }
+
+    $html .= "\t\t\t\t\t\t<option value=\"Key\" selected=\"selected\">Key</option>\n";
+    $html .= "\t\t\t\t\t\t<option value=\"Temporary\">Temporary Key</option>\n";
+    $html .= "\t\t\t\t\t</select>\n";
+    $html .= "\t\t\t\t\t<label for=\"data\">Key</label>\n";
+    $html .= "\t\t\t\t\t<input type=\"text\" name=\"data\" placeholder=\"Key\">\n";
+    $html .= "\t\t\t\t\t<label for=\"uploadsleft\">Number</label>\n";
+    $html .= "\t\t\t\t\t<input type=\"number\" name=\"uploadsleft\" min=\"1\" value=\"1\">\n";
+    $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Create key\" name=\"create\">\n";
+    $html .= "\t\t\t\t</form>\n";
+
+    // handle errors
+    if ($Error == "data") {
+        $html .= "\t\t\t\t<p class=\"adminError\">Invalid key.</p>\n";
+    } else if ($Error == "type") {
+        $html .= "\t\t\t\t<p class=\"adminError\">Invalid type.</p>\n";
+    } else if ($Error == "denied") {
+        $html .= "\t\t\t\t<p class=\"adminError\">You don't have permission to create a key of this type.</p>\n";
+    } else if ($Error == "exists") {
+        $html .= "\t\t\t\t<p class=\"adminError\">This key already exists.</p>\n";
+    } else if ($Error == "uploads") {
+        $html .= "\t\t\t\t<p class=\"adminError\">Invalid amount of uploads.</p>\n";
+    }
 } else if ($Action == "keys") {
     if ($Primary != 1) {
         $html .= "\t\t\t\t<p class=\"adminWarning\">Administrator keys are not visible.</p>\n";
