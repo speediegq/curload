@@ -18,6 +18,12 @@
 
 #administration {
     color: #ffc0cb;
+    float: right;
+}
+
+#login, #logout {
+    padding-left: 5px;
+    float: right;
 }
 
 .bar img {

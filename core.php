@@ -22,6 +22,17 @@ function printHeader($html) {
     $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
+    $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+
+    foreach (glob('*.php') as $file) {
+        if (!file_exists("$file".".name")) {
+            continue;
+        }
+
+        $name = file_get_contents("$file".".name");
+        $name = rtrim($name, "\r\n");
+        $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
+    }
 
     if (!isset($_COOKIE[$cookieName])) {
         $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
@@ -32,16 +43,6 @@ function printHeader($html) {
     if (isset($_COOKIE[$cookieTypeName]) && $_COOKIE[$cookieTypeName] == 2) {
         $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
     }
-
-     foreach (glob('*.php') as $file) {
-         if (!file_exists("$file".".name")) {
-             continue;
-         }
-
-         $name = file_get_contents("$file".".name");
-         $name = rtrim($name, "\r\n");
-         $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
-     }
 
     $html .= "\t\t\t</span>\n";
     $html .= "\t\t</div>\n";

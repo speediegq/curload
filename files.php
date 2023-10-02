@@ -1,0 +1,105 @@
+<?php
+/* curload
+ * Simple file uploading using POST requests and temporary keys
+ * Licensed under the GNU Affero General Public License version 3.0
+ */
+
+include "config.php";
+include "core.php";
+include "create-table.php";
+
+$Error = "";
+$html = "";
+
+if (isset($_REQUEST['e'])) $Error = $_REQUEST['e'];
+
+$html = printHeader($html);
+$html .= "\t\t\t<h1>Your files</h1>\n";
+$html .= "\t\t\t\t<p>These are the files you have uploaded using this key.</p>\n";
+
+// If logged in ...
+if (isset($_COOKIE[$cookieTypeName]) && (!$publicUploading || $publicUploading == "false")) {
+    $Database = createTables($sqlDB);
+    $DatabaseQuery = $Database->query('SELECT * FROM uploads');
+
+    $html .= "\t\t\t\t<table class=\"FileView\">\n";
+    $html .= "\t\t\t\t\t<tr class=\"FileView\">\n";
+    $html .= "\t\t\t\t\t\t<th class=\"fileID\">ID</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"fileFilename\">Filename</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"fileUploadDate\">Upload date</th>\n";
+    $html .= "\t\t\t\t\t</tr>\n";
+
+    while ($line = $DatabaseQuery->fetchArray()) {
+        $ID = $line['id'];
+        $Filename = $line['file'];
+        $uploadDate = $line['uploaddate'];
+        $keyID = $line['keyid'];
+        $keytypeID = $line['keytype'];
+        $CorrectFile = 0;
+
+        if ($line['keytype'] == 0) {
+            $keyType = "Key";
+        } else if ($line['keytype'] == 1) {
+            $keyType = "Temporary";
+        } else if ($line['keytype'] == 2) {
+            $keyType = "Administrator";
+        } else {
+            $keyType = "Unknown";
+        }
+
+        if ($keytypeID == 0) { // is it a normal key?
+            $UserDatabaseQuery = $Database->query('SELECT * FROM keys');
+            while ($uline = $UserDatabaseQuery->fetchArray()) {
+                if ($uline['id'] == $keyID && $keytypeID == 0 && $_COOKIE[$cookieName] == $uline['key']) {
+                    $CorrectFile = 1;
+                    break;
+                }
+            }
+        } else if ($keytypeID == 1) { // no?
+            $UserDatabaseQuery = $Database->query('SELECT * FROM tkeys');
+            while ($uline = $UserDatabaseQuery->fetchArray()) {
+                if ($uline['id'] == $keyID && $keytypeID == 1 && $_COOKIE[$cookieName] == $uline['key']) {
+                    $CorrectFile = 1;
+                    break;
+                }
+            }
+        } else if ($keytypeID == 2) { // must be a member of the club, then
+            $UserDatabaseQuery = $Database->query('SELECT * FROM admins');
+            while ($uline = $UserDatabaseQuery->fetchArray()) {
+                if ($uline['id'] == $keyID && $keytypeID == 2 && $_COOKIE[$cookieName] == $uline['key']) {
+                    $CorrectFile = 1;
+                    break;
+                }
+            }
+        }
+
+        // wrong file, move on
+        if ($CorrectFile != 1) {
+            continue;
+        }
+
+        $html .= "\t\t\t\t\t<tr class=\"FileView\">\n";
+        $html .= "\t\t\t\t\t\t<td class=\"fileID\" id=\"fileID-$ID\">$ID</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"fileFilename\"><a href=\"$Filename\">$Filename</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"fileUploadDate\">$uploadDate</td>\n";
+
+        if (($enableKeyUploadRemoval || $enableKeyUploadRemoval == "true") || $keytypeID == 2) {
+            $html .= "\t\t\t\t\t\t<td class=\"fileRemove\"><a href=\"/remove.php?redir=files&id=$ID\">Remove</a></td>\n";
+        }
+
+        $html .= "\t\t\t\t\t</tr>\n";
+    }
+
+    $html .= "\t\t\t\t</table>\n";
+} else {
+    header("Location: index.php");
+    die();
+}
+
+// End the content div and print footer
+$html = printFooter($html);
+
+// Finally print it all out at once
+print "$html";
+
+?>

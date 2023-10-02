@@ -8,9 +8,9 @@ include "config.php";
 include "create-table.php";
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
-    header('Location: login.php?redir=admin');
+    header('Location: login.php');
     die();
-} else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
+} else if ($_COOKIE[$cookieTypeName] != 2 && (!$enableKeyUploadRemoval || $enableKeyUploadRemoval == "false")) { // not allowed
     header('Location: /');
     die();
 }
@@ -37,22 +37,6 @@ if (isset($_REQUEST['redir'])) {
 }
 
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
-
-while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
-        $AuthorizedRemoval = 1;
-        $AdminIsPrimary = $line['primaryadmin'];
-        break;
-    }
-}
-
-// not authorized
-if ($AuthorizedRemoval != 1) {
-    header('Location: /');
-    die();
-}
-
 $DatabaseQuery = $Database->query('SELECT * FROM uploads');
 
 while ($line = $DatabaseQuery->fetchArray()) {
@@ -67,7 +51,18 @@ while ($line = $DatabaseQuery->fetchArray()) {
                     $AuthorizedRemoval = 1;
                     break;
                 }
+            }
+        }
 
+        // check if our key is a temporary key
+        if (($enableKeys || $enableKeys == "true") && ($enableKeyUploadRemoval || $enableKeyUploadRemoval == "true")) {
+            $keyDatabaseQuery = $Database->query('SELECT * FROM tkeys');
+
+            while ($kline = $keyDatabaseQuery->fetchArray()) {
+                if ($line['keyid'] == $kline['id']) {
+                    $AuthorizedRemoval = 1;
+                    break;
+                }
             }
         }
 
@@ -83,7 +78,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
             }
 
             while ($kline = $keyDatabaseQuery->fetchArray()) {
-                if ($kline['key'] == $Key && $Key != "" && $kline['key'] != "") { // key = passed key
+                if ($kline['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $kline['key'] != "") { // key = passed key
                     if (($fileUploadedByPrimary == 1 && $kline['primaryadmin'] == 1) || ($fileUploadedByPrimary == 0)) { // primary key passed and primary file OR non primary file
                         $AuthorizedRemoval = 1;
                         break;
@@ -100,7 +95,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 
 // fuck off pleb
 if ($AuthorizedRemoval != 1) {
-    print "You aren't authorized to perform this action.";
+    header("Location: /");
     die();
 }
 
@@ -109,6 +104,8 @@ unlink(ltrim($FileToRemove, '/'));
 
 if ($Redirect == "admin") {
     header("Location: admin.php?action=files");
+} else if ($Redirect == "files") {
+    header("Location: files.php");
 } else {
     header("Location: /");
 }
