@@ -105,18 +105,18 @@ if (isset($_REQUEST['uploads']) && $Type == "Temporary") {
 
 if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
     $uploadsLeft = $_REQUEST['uploadsleft'];
-}
 
-if (($_REQUEST['uploadsleft'] == 0 || !isset($_REQUEST['uploadsleft'])) && $Type == "Temporary") {
-    if ($Redirect == "admin") {
-        header("Location: admin.php?action=create&e=uploads");
-    } else if ($Redirect == "uploads") {
-        header("Location: setup.php?e=type");
-    } else {
-        header("Location: /");
+    if ($uploadsLeft == 0 || !isset($_REQUEST['uploadsleft'])) {
+        if ($Redirect == "admin") {
+            header("Location: admin.php?action=create&e=uploads");
+        } else if ($Redirect == "uploads") {
+            header("Location: setup.php?e=type");
+        } else {
+            header("Location: /");
+        }
+
+        die();
     }
-
-    die();
 }
 
 if ($Type == "Admin") {

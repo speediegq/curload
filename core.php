@@ -22,7 +22,7 @@ function printHeader($html) {
     $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
-    $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+    if (isset($_COOKIE[$cookieName])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
 
     foreach (glob('*.php') as $file) {
         if (!file_exists("$file".".name")) {
