@@ -5,7 +5,6 @@
  */
 
 include "config.php";
-include "create-table.php";
 include "core.php";
 
 $Authorized = 0;
@@ -39,9 +38,8 @@ if (isset($_REQUEST['key'])) {
 
     // check the validity of the key
     $Database = createTables($sqlDB);
-
-    // Temporary keys
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
+
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
             $id = $line['id'];
@@ -65,38 +63,7 @@ if (isset($_REQUEST['key'])) {
             }
 
             $Authorized = 1;
-            $KeyType = 1;
-
-            break;
-        }
-    }
-
-    // Admin keys
-    $DatabaseQuery = $Database->query('SELECT * FROM admins');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableTemporaryKeys || $enableTemporaryKeys == "true")) {
-            $id = $line['id'];
-
-            // update last usage
-            if ($storeLastUsage || $storeLastUsage == "true") {
-                $lastUsed = date($dateFormat);
-                $Database->exec("UPDATE admins SET lastused='$lastUsed' WHERE id='$id'");
-            }
-
-            // update IP address
-            if ($storeIP || $storeIP == "true") {
-                $ip = getIPAddress();
-                $Database->exec("UPDATE admins SET ip='$ip' WHERE id='$id'");
-            }
-
-            // update user agent
-            if ($storeAgent || $storeAgent == "true") {
-                $userAgent = getUserAgent();
-                $Database->exec("UPDATE admins SET useragent='$userAgent' WHERE id='$id'");
-            }
-
-            $Authorized = 1;
-            $KeyType = 2;
+            $KeyType = $line['keytype'];
 
             break;
         }

@@ -5,7 +5,6 @@
  */
 
 include "config.php";
-include "create-table.php";
 include "core.php";
 
 $WebInterface = 1;
@@ -44,15 +43,14 @@ if (!$publicUploading || $publicUploading == "false") {
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0 && ($enableKeys || $enableKeys == "true")) {
-            // decrease uploads left if temporary
-            if ($line['uploadsleft'] != -1) {
-                $uploadsLeft = $line['uploadsleft'] - 1;
-            }
-
             $id = $line['id'];
             $keyID = $id;
 
-            $Database->exec("UPDATE keys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
+            // decrease uploads left if temporary
+            if ($line['uploadsleft'] != -1) {
+                $uploadsLeft = $line['uploadsleft'] - 1;
+                $Database->exec("UPDATE keys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
+            }
 
             if ($storeLastUsage || $storeLastUsage == "true") {
                 $lastUsed = date($dateFormat);
@@ -75,39 +73,8 @@ if (!$publicUploading || $publicUploading == "false") {
             }
 
             $Authorized = 1;
-            $keyType = 1;
+            $keyType = $line['keytype'];
             break;
-        }
-    }
-
-    // maybe admin?
-    if ($Authorized != 1) {
-        $DatabaseQuery = $Database->query('SELECT * FROM admins');
-
-        while ($line = $DatabaseQuery->fetchArray()) {
-            if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableAdminKeys || $enableAdminKeys == "true")) {
-                $id = $line['id'];
-                $keyID = $id;
-                $numberOfUploads = $line['numberofuploads'] + 1;
-                $lastUsed = date($dateFormat);
-
-                $Database->exec("UPDATE admins SET lastused='$lastUsed' WHERE id='$id'");
-                $Database->exec("UPDATE admins SET numberofuploads='$numberOfUploads' WHERE id='$id'");
-
-                if ($storeIP || $storeIP == "true") {
-                    $ip = getIPAddress();
-                    $Database->exec("UPDATE admins SET ip='$ip' WHERE id='$id'");
-                }
-
-                if ($storeAgent || $storeAgent == "true") {
-                    $userAgent = getUserAgent();
-                    $Database->exec("UPDATE admins SET useragent='$userAgent' WHERE id='$id'");
-                }
-
-                $Authorized = 1;
-                $keyType = 2;
-                break;
-            }
         }
     }
 

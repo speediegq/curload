@@ -5,7 +5,7 @@
  */
 
 include "config.php";
-include "create-table.php";
+include "core.php";
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     header('Location: login.php?redir=admin');
@@ -42,10 +42,10 @@ if (isset($_REQUEST['redir'])) {
 }
 
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
+$DatabaseQuery = $Database->query('SELECT * FROM keys');
 
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+    if ($line['keytype'] == 2 && $line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
         $AuthorizedRemoval = 1;
         $AdminIsPrimary = $line['primaryadmin'];
         break;
@@ -60,26 +60,9 @@ if ($AuthorizedRemoval != 1) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM keys');
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($type != 1) break;
-    if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1) { // passed ID is a key that exists
-        if ($AuthorizedRemoval == 1) {
-            $Database->exec("DELETE FROM keys WHERE id='$id'");
-            $Removed = 1;
-        } else {
-            print "You aren't authorized to perform this action.";
-            die();
-        }
-
-        break;
-    }
-}
-
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
-while ($line = $DatabaseQuery->fetchArray()) {
-    if ($type != 2) break;
     if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1 && $line['primaryadmin'] != 1) { // passed ID is a key that exists
-        if ($AuthorizedRemoval == 1 && $AdminIsPrimary == 1) { // in order to delete an admin key you must be a primary admin
-            $Database->exec("DELETE FROM admins WHERE id='$id'");
+        if ($AuthorizedRemoval == 1 && (($AdminIsPrimary == 1 && $line['id'] == 2) || $line['id'] != 2)) {
+            $Database->exec("DELETE FROM keys WHERE id='$id'");
             $Removed = 1;
         } else {
             print "You aren't authorized to perform this action.";

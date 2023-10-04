@@ -4,31 +4,30 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
-include "config.php";
-include "create-table.php";
 include "core.php";
+include "config.php";
 
 $Redirect = "";
 $uploadsLeft = 1;
 $AuthorizedCreation = 0;
 $AdminIsPrimary = 0;
-$primary = 0;
+$firstKey = 0;
+$typeNum = 1;
+$numberOfUploads = 0;
+$lastUsed = "";
+$Issued = "";
+$ip = "";
+$userAgent = "";
 
 if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];
 }
 
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
+$DatabaseQuery = $Database->query('SELECT * FROM keys');
 
-$adminExists = 0;
-while ($line = $DatabaseQuery->fetchArray()) {
-    $adminExists = 1;
-    break;
-}
-
-if ($adminExists != 1) {
-    $primary = 1;
+if (!checkIfAdminExists()) {
+    $firstKey = 1;
 } else {
     if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
         header('Location: login.php?redir=admin');
@@ -38,10 +37,10 @@ if ($adminExists != 1) {
         die();
     }
 
-    $primary = 0;
+    $firstKey = 0;
 }
 
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
+$DatabaseQuery = $Database->query('SELECT * FROM keys');
 while ($line = $DatabaseQuery->fetchArray()) {
     if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
         $AuthorizedCreation = 1;
@@ -51,11 +50,12 @@ while ($line = $DatabaseQuery->fetchArray()) {
 }
 
 // not authorized
-if ($AuthorizedCreation != 1 && $primary != 1) {
+if ($AuthorizedCreation != 1 && $firstKey != 1) {
     header('Location: /');
     die();
 }
 
+// data must be specified
 if (isset($_REQUEST['data']) && $_REQUEST['data'] != "") {
     $Data = $_REQUEST['data'];
 } else {
@@ -70,6 +70,7 @@ if (isset($_REQUEST['data']) && $_REQUEST['data'] != "") {
     die();
 }
 
+// type must be specified
 if (isset($_REQUEST['type']) && $_REQUEST['type'] != "") {
     $Type = $_REQUEST['type'];
 } else {
@@ -84,12 +85,7 @@ if (isset($_REQUEST['type']) && $_REQUEST['type'] != "") {
     die();
 }
 
-if (isset($_REQUEST['uploads']) && $Type == "Temporary") {
-    $Uploads = $_REQUEST['uploads'];
-} else {
-    $Uploads = 1;
-}
-
+// uploads left must be specified for temp keys
 if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
     $uploadsLeft = $_REQUEST['uploadsleft'];
 
@@ -108,108 +104,47 @@ if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
     $uploadsLeft = -1;
 }
 
-if ($Type == "Admin") {
-    if ($AdminIsPrimary != 1 && $primary != 1) {
-        if ($Redirect == "admin") {
-            header("Location: admin.php?action=create&e=denied");
-        } else if ($Redirect == "setup") {
-            header("Location: setup.php?e=denied");
-        } else {
-            header("Location: /");
-        }
-
-        die();
-    }
-
-    $DatabaseQuery = $Database->query('SELECT * FROM admins');
-
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
-            if ($Redirect == "admin") {
-                header("Location: admin.php?action=create&e=exists");
-            } else if ($Redirect == "setup") {
-                header("Location: setup.php?e=exists");
-            } else {
-                header("Location: /");
-            }
-
-            die();
-        }
-    }
-
-    $numberOfUploads = 0;
-    $lastUsed = "";
-    $Issued = "";
-    $ip = "";
-    $userAgent = "";
-
-    if ($storeAgent || $storeAgent == "true") {
-        $userAgent = getUserAgent();
-    }
-
-    if ($storeIssued || $storeIssued == "true") {
-        $Issued = date($dateFormat);
-    }
-
-    if ($storeLastUsage || $storeLastUsage == "true") {
-        $lastUsed = date($dateFormat);
-    }
-
-    if ($storeIP || $storeIP == "true") {
-        $ip = getIPAddress();
-    }
-
-    $Database->exec("INSERT INTO admins(key, primaryadmin, numberofuploads, lastused, issued, ip, useragent) VALUES('$Data', '$primary', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
-} else if ($Type == "Temporary" || $Type == "Key") {
-    $DatabaseQuery = $Database->query('SELECT * FROM keys');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
-            if ($Redirect == "admin") {
-                header("Location: admin.php?action=create&e=exists");
-            } else if ($Redirect == "setup") {
-                header("Location: setup.php?e=exists");
-            } else {
-                header("Location: /");
-            }
-
-            die();
-        }
-    }
-
-    $numberOfUploads = 0;
-    $lastUsed = "";
-    $Issued = "";
-    $ip = "";
-    $userAgent = "";
-
-    if ($storeAgent || $storeAgent == "true") {
-        $userAgent = getUserAgent();
-    }
-
-    if ($storeIssued || $storeIssued == "true") {
-        $Issued = date($dateFormat);
-    }
-
-    if ($storeLastUsage || $storeLastUsage == "true") {
-        $lastUsed = date($dateFormat);
-    }
-
-    if ($storeIP || $storeIP == "true") {
-        $ip = getIPAddress();
-    }
-
-    $Database->exec("INSERT INTO keys(key, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Data', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
-} else {
+// only primary admins may create admin keys
+if ($AdminIsPrimary != 1 && $firstKey != 1 && $Type == "Admin") {
     if ($Redirect == "admin") {
-        header("Location: admin.php?action=create&e=type");
+        header("Location: admin.php?action=create&e=denied");
     } else if ($Redirect == "setup") {
-        header("Location: setup.php?e=type");
+        header("Location: setup.php?e=denied");
     } else {
         header("Location: /");
     }
 
     die();
 }
+
+// check if a key by the same name already exists
+$DatabaseQuery = $Database->query('SELECT * FROM keys');
+while ($line = $DatabaseQuery->fetchArray()) {
+    if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
+        if ($Redirect == "admin") {
+            header("Location: admin.php?action=create&e=exists");
+        } else if ($Redirect == "setup") {
+            header("Location: setup.php?e=exists");
+        } else {
+            header("Location: /");
+        }
+
+        die();
+    }
+}
+
+if ($storeAgent || $storeAgent == "true") $userAgent = getUserAgent();
+if ($storeIssued || $storeIssued == "true") $Issued = date($dateFormat);
+if ($storeLastUsage || $storeLastUsage == "true") $lastUsed = date($dateFormat);
+if ($storeIP || $storeIP == "true") $ip = getIPAddress();
+
+if ($Type == "Admin") {
+    $typeNum = 2;
+} else {
+    $typeNum = 1;
+}
+
+$Database->exec("INSERT INTO keys(key, keytype, primaryadmin, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Data', '$typeNum', '$firstKey', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
 
 if ($Redirect == "admin") {
     header("Location: admin.php?action=keys");

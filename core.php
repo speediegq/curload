@@ -4,6 +4,35 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
+function createTables($sqlDB) {
+    $Database = new SQLite3($sqlDB);
+
+    /* keys table
+     * id (INTEGER PRIMARY KEY)
+     * key (TEXT)
+     * keytype (INT)
+     * primaryadmin (INT)
+     * numberofuploads (INT)
+     * uploadsleft (INT)
+     * lastused (TEXT)
+     * issued (TEXT)
+     * ip (TEXT)
+     * useragent (TEXT)
+     */
+    $Database->exec("CREATE TABLE IF NOT EXISTS keys(id INTEGER PRIMARY KEY, key TEXT, keytype INT, primaryadmin INT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+
+    /* uploads table
+     * id (INTEGER PRIMARY KEY)
+     * file (TEXT)
+     * uploaddate (TEXT)
+     * keyid (INT) (THIS IS THE ID OF THE KEY USED TO UPLOAD THE FILE)
+     * keytype (INT)
+     */
+    $Database->exec("CREATE TABLE IF NOT EXISTS uploads(id INTEGER PRIMARY KEY, file TEXT, uploaddate TEXT, keyid INT, keytype INT)");
+
+    return $Database;
+}
+
 function printHeader($html) {
     include "config.php";
 
@@ -96,17 +125,18 @@ function printFileUploadForm($html, $Error) {
 
 function checkIfAdminExists() {
     include "config.php";
-    include "create-table.php";
 
     $adminExists = 0;
 
     $Database = createTables($sqlDB);
-    $DatabaseQuery = $Database->query('SELECT * FROM admins');
+    $DatabaseQuery = $Database->query('SELECT * FROM keys');
 
     $adminExists = 0;
     while ($line = $DatabaseQuery->fetchArray()) {
-        $adminExists = 1;
-        break;
+        if ($line['keytype'] == 2) {
+            $adminExists = 1;
+            break;
+        }
     }
 
     return $adminExists;

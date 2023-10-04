@@ -6,7 +6,6 @@
 
 include "config.php";
 include "core.php";
-include "create-table.php";
 
 $Error = "";
 $html = "";
@@ -45,21 +44,11 @@ if (isset($_COOKIE[$cookieTypeName]) && (!$publicUploading || $publicUploading =
             $keyType = "Unknown";
         }
 
-        if ($keytypeID == 1) { // key?
-            $UserDatabaseQuery = $Database->query('SELECT * FROM keys');
-            while ($uline = $UserDatabaseQuery->fetchArray()) {
-                if ($uline['id'] == $keyID && $keytypeID == 1 && $_COOKIE[$cookieName] == $uline['key']) {
-                    $CorrectFile = 1;
-                    break;
-                }
-            }
-        } else if ($keytypeID == 2) { // must be a member of the club, then
-            $UserDatabaseQuery = $Database->query('SELECT * FROM admins');
-            while ($uline = $UserDatabaseQuery->fetchArray()) {
-                if ($uline['id'] == $keyID && $keytypeID == 2 && $_COOKIE[$cookieName] == $uline['key']) {
-                    $CorrectFile = 1;
-                    break;
-                }
+        $UserDatabaseQuery = $Database->query('SELECT * FROM keys');
+        while ($uline = $UserDatabaseQuery->fetchArray()) {
+            if ($uline['id'] == $keyID && $_COOKIE[$cookieName] == $uline['key']) {
+                $CorrectFile = 1;
+                break;
             }
         }
 

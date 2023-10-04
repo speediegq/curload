@@ -5,7 +5,7 @@
  */
 
 include "config.php";
-include "create-table.php";
+include "core.php";
 
 if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
     header('Location: login.php');
@@ -56,7 +56,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 
         // check if the key is an admin key, automatically making it authorized to remove the file provided it wasn't uploaded by a primary admin
         if ($AuthorizedRemoval != 1 && ($enableUploadRemoval || $enableUploadRemoval == "true")) {
-            $keyDatabaseQuery = $Database->query('SELECT * FROM admins');
+            $keyDatabaseQuery = $Database->query('SELECT * FROM keys');
 
             // check if the file was uploaded by a primary admin
             while ($kline = $keyDatabaseQuery->fetchArray()) {
@@ -66,7 +66,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
             }
 
             while ($kline = $keyDatabaseQuery->fetchArray()) {
-                if ($kline['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $kline['key'] != "") { // key = passed key
+                if ($kline['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $kline['key'] != "" && $kline['keytype'] == 2) { // key = passed key
                     if (($fileUploadedByPrimary == 1 && $kline['primaryadmin'] == 1) || ($fileUploadedByPrimary == 0)) { // primary key passed and primary file OR non primary file
                         $AuthorizedRemoval = 1;
                         break;

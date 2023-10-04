@@ -6,7 +6,6 @@
 
 include "core.php";
 include "config.php";
-include "create-table.php";
 
 $Action = "";
 $Authorized = 0;
@@ -47,10 +46,10 @@ if (!$enableAdminKeys || $enableAdminKeys == "false") {
 }
 
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM admins');
+$DatabaseQuery = $Database->query('SELECT * FROM keys');
 
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && $line['keytype'] == 2 && ($enableKeys || $enableKeys == "true")) {
         $Authorized = 1;
         $Primary = $line['primaryadmin'];
         break;
@@ -179,54 +178,13 @@ if ($Action == "files") {
     $html .= "\t\t\t\t\t\t<th class=\"adminKeyType\">Key type</th>\n";
     $html .= "\t\t\t\t\t</tr>\n";
 
-    $DatabaseQuery = $Database->query('SELECT * FROM admins');
+    $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($Primary != 1) {
-            break;
-        }
-
-        // allow filtering
         if ($line['id'] != $filterID && $filterID != -1) {
             continue;
         }
 
-        $ID = $line['id'];
-        $Key = $line['key'];
-        $NumberOfUploads = $line['numberofuploads'];
-        $UploadsLeft = "";
-        $LastUsed = $line['lastused'];
-        $Issued = $line['issued'];
-        $IP = $line['ip'];
-        $UserAgent = $line['useragent'];
-
-        $keyType = "Administrator";
-        $UploadsLeft = "∞";
-
-        if ($line['primaryadmin'] == 1) {
-            $keyType = "Primary Administrator";
-        }
-
-        $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-2-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
-
-        if ($Primary == 1 && $line['primaryadmin'] != 1) { // primary admins cannot be removed
-            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
-        }
-
-        $html .= "\t\t\t\t\t</tr>\n";
-    }
-
-    $DatabaseQuery = $Database->query('SELECT * FROM keys');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['id'] != $filterID && $filterID != -1) {
+        if ($line['keytype'] == 2 && $Primary != 1) {
             continue;
         }
 
@@ -246,6 +204,13 @@ if ($Action == "files") {
             $UploadsLeft = "∞";
             $keyType = "Key";
         }
+        if ($line['keytype'] == 2) {
+            $keyType = "Administrator";
+
+            if ($line['primaryadmin'] == 1) {
+                $keyType = "Primary Administrator";
+            }
+        }
 
         $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-1-$ID\">$ID</td>\n";
@@ -257,7 +222,11 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=1\">Remove</a></td>\n";
+
+        if ($Primary == 1 && $line['primaryadmin'] != 1) { // primary admins cannot be removed
+            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
+        }
+
         $html .= "\t\t\t\t\t</tr>\n";
     }
 
