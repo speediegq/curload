@@ -51,7 +51,7 @@ function printHeader($html) {
     $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
-    if (isset($_COOKIE[$cookieName])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+    if (isset($_SESSION['key'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
 
     foreach (glob('*.php') as $file) {
         if (!file_exists("$file".".name")) {
@@ -63,13 +63,13 @@ function printHeader($html) {
         $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
     }
 
-    if (!isset($_COOKIE[$cookieName])) {
+    if (!isset($_SESSION['key'])) {
         $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
     } else {
         $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
     }
 
-    if (isset($_COOKIE[$cookieTypeName]) && $_COOKIE[$cookieTypeName] == 2) {
+    if (isset($_SESSION['type']) && $_SESSION['type'] == 2) {
         $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
     }
 
@@ -101,7 +101,7 @@ function printFileUploadForm($html, $Error) {
     include "config.php";
 
     // print the form
-    if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
+    if (isset($_SESSION['type']) || ($publicUploading || $publicUploading == "true")) {
         $html .= "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">\n";
         $html .= "\t\t\t\t<input type=\"file\" name=\"file\" id=\"file\">\n";
         $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" name=\"web\">\n";

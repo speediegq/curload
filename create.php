@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -29,10 +29,10 @@ $DatabaseQuery = $Database->query('SELECT * FROM keys');
 if (!checkIfAdminExists()) {
     $firstKey = 1;
 } else {
-    if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
+    if (!isset($_SESSION['key']) || !isset($_SESSION['type'])) {
         header('Location: login.php?redir=admin');
         die();
-    } else if ($_COOKIE[$cookieTypeName] != 2) { // not allowed
+    } else if ($_SESSION['type'] != 2) { // not allowed
         header('Location: /');
         die();
     }
@@ -42,7 +42,7 @@ if (!checkIfAdminExists()) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM keys');
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+    if ($line['key'] == $_SESSION['key'] && $_SESSION['key'] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
         $AuthorizedCreation = 1;
         $AdminIsPrimary = $line['primaryadmin'];
         break;

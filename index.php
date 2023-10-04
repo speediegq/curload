@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -29,7 +29,7 @@ $html .= "\t\t\t<h1>$instanceName</h1>\n";
 $html .= "\t\t\t\t<p>$instanceDescription</p>\n";
 
 // If logged in ...
-if (isset($_COOKIE[$cookieTypeName]) || ($publicUploading || $publicUploading == "true")) {
+if (isset($_SESSION['type']) || ($publicUploading || $publicUploading == "true")) {
     $html = printFileUploadForm($html, $Error);
 } else {
     $html .= "\t\t\t\t<p>To upload a file, <a href=\"login.php\">log in using your key</a> and select a file to upload. After uploading, you will receive a link to the file stored on the servers.</p>\n";

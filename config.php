@@ -24,13 +24,11 @@ $dateFormat             = "Y/m/d";
 $instanceName           = "curload";
 $instanceDescription    = "curload is a simple file uploading site allowing users to upload files by authenticating using a key.";
 $footerText             = "Licensed under the GNU Affero General Public License version 3.0.";
-$cookieName             = "speedierocks";
 $enableKeys             = true;
 $enableAdminKeys        = true;
 $enableTemporaryKeys    = true;
 $enableUploadRemoval    = true;
 $enableKeyUploadRemoval = false;
-$cookieTypeName         = "$cookieName" . "_type";
 
 $configFile = "";
 
@@ -72,7 +70,5 @@ $enableAdminKeys = $configEntries['enable_admin_keys'];
 $enableTemporaryKeys = $configEntries['enable_temporary_keys'];
 $enableUploadRemoval = $configEntries['enable_upload_removal'];
 $enableKeyUploadRemoval = $configEntries['enable_key_upload_removal'];
-$cookieName = $configEntries['cookie_name'];
 $javaScript = $configEntries['javascript'];
-$cookieTypeName = "$cookieName" . "_type";
 ?>

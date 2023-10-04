@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -15,16 +15,17 @@ if (isset($_REQUEST['redir'])) {
     $Redirect = $_REQUEST['redir'];
 }
 
-// if a cookie exists, redirect the user there instead
-if (isset($_COOKIE[$cookieName])) {
+// if a session exists, redirect the user there instead
+if (isset($_SESSION['key'])) {
     if (isset($_REQUEST['logout']) && $_REQUEST['logout'] == "true") {
-        setcookie($cookieName, "", 0);
-        setcookie($cookieTypeName, "", 0);
+        session_unset();
+        session_destroy();
+
         header('Location: login.php');
         die();
     }
 
-    if ($Redirect == "index" || ($Redirect == "admin" && $_COOKIE[$cookieTypeName] != 2) || $Redirect == "") {
+    if ($Redirect == "index" || ($Redirect == "admin" && $_SESSION['type'] != 2) || $Redirect == "") {
         header('Location: /');
         die();
     } else if ($Redirect == "admin") {
@@ -78,8 +79,8 @@ if (isset($_REQUEST['key'])) {
         die();
     }
 
-    setcookie($cookieName, $Key);
-    setcookie($cookieTypeName, $KeyType);
+    $_SESSION['key'] = $Key;
+    $_SESSION['type'] = $KeyType;
 
     if ($Redirect != "") { // just so we can try again and still be redirected to the right place
         header("Location: login.php?e=true&redir=$Redirect");

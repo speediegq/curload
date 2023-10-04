@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -7,10 +7,10 @@
 include "config.php";
 include "core.php";
 
-if (!isset($_COOKIE[$cookieName]) || !isset($_COOKIE[$cookieTypeName])) {
+if (!isset($_SESSION['key']) || !isset($_SESSION['type'])) {
     header('Location: login.php');
     die();
-} else if ($_COOKIE[$cookieTypeName] != 2 && (!$enableKeyUploadRemoval || $enableKeyUploadRemoval == "false")) { // not allowed
+} else if ($_SESSION['type'] != 2 && (!$enableKeyUploadRemoval || $enableKeyUploadRemoval == "false")) { // not allowed
     header('Location: /');
     die();
 }
@@ -66,7 +66,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
             }
 
             while ($kline = $keyDatabaseQuery->fetchArray()) {
-                if ($kline['key'] == $_COOKIE[$cookieName] && $_COOKIE[$cookieName] != "" && $kline['key'] != "" && $kline['keytype'] == 2) { // key = passed key
+                if ($kline['key'] == $_SESSION['key'] && $_SESSION['key'] != "" && $kline['key'] != "" && $kline['keytype'] == 2) { // key = passed key
                     if (($fileUploadedByPrimary == 1 && $kline['primaryadmin'] == 1) || ($fileUploadedByPrimary == 0)) { // primary key passed and primary file OR non primary file
                         $AuthorizedRemoval = 1;
                         break;

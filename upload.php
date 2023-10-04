@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -12,8 +12,8 @@ $WebInterface = 1;
 if (isset($_REQUEST['key'])) {
     $Key = $_REQUEST['key'];
     $WebInterface = 0;
-} else if (isset($_COOKIE[$cookieName])) {
-    $Key = $_COOKIE[$cookieName];
+} else if (isset($_SESSION['key'])) {
+    $Key = $_SESSION['key'];
     $WebInterface = 1;
 } else if (!$publicUploading || $publicUploading == "false") {
     print "No key specified.";

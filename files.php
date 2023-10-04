@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 /* curload
  * Simple file uploading using POST requests and temporary keys
  * Licensed under the GNU Affero General Public License version 3.0
@@ -17,7 +17,7 @@ $html .= "\t\t\t<h1>Your files</h1>\n";
 $html .= "\t\t\t\t<p>These are the files you have uploaded using this key.</p>\n";
 
 // If logged in ...
-if (isset($_COOKIE[$cookieTypeName]) && (!$publicUploading || $publicUploading == "false")) {
+if (isset($_SESSION['type']) && (!$publicUploading || $publicUploading == "false")) {
     $Database = createTables($sqlDB);
     $DatabaseQuery = $Database->query('SELECT * FROM uploads');
 
@@ -46,7 +46,7 @@ if (isset($_COOKIE[$cookieTypeName]) && (!$publicUploading || $publicUploading =
 
         $UserDatabaseQuery = $Database->query('SELECT * FROM keys');
         while ($uline = $UserDatabaseQuery->fetchArray()) {
-            if ($uline['id'] == $keyID && $_COOKIE[$cookieName] == $uline['key']) {
+            if ($uline['id'] == $keyID && $_SESSION['key'] == $uline['key']) {
                 $CorrectFile = 1;
                 break;
             }
