@@ -6,6 +6,7 @@
 
 include "config.php";
 include "create-table.php";
+include "core.php";
 
 $WebInterface = 1;
 
@@ -22,7 +23,7 @@ if (isset($_REQUEST['key'])) {
 
 $Status = 0;
 $Authorized = 0;
-$keyType = 0;
+$keyType = 1;
 $uploadLimit = $maxFileSize * 1000000;
 $keyID = 0;
 
@@ -42,9 +43,16 @@ $Database = createTables($sqlDB);
 if (!$publicUploading || $publicUploading == "false") {
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0 && ($enableKeys || $enableKeys == "true")) {
+            // decrease uploads left if temporary
+            if ($line['uploadsleft'] != -1) {
+                $uploadsLeft = $line['uploadsleft'] - 1;
+            }
+
             $id = $line['id'];
             $keyID = $id;
+
+            $Database->exec("UPDATE keys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
 
             if ($storeLastUsage || $storeLastUsage == "true") {
                 $lastUsed = date($dateFormat);
@@ -57,69 +65,18 @@ if (!$publicUploading || $publicUploading == "false") {
             }
 
             if ($storeIP || $storeIP == "true") {
-                if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                    $ip = $_SERVER['HTTP_CLIENT_IP'];
-                } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                } else {
-                    $ip = $_SERVER['REMOTE_ADDR'];
-                }
-
+                $ip = getIPAddress();
                 $Database->exec("UPDATE keys SET ip='$ip' WHERE id='$id'");
             }
 
             if ($storeAgent || $storeAgent == "true") {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $userAgent = getUserAgent();
                 $Database->exec("UPDATE keys SET useragent='$userAgent' WHERE id='$id'");
             }
 
             $Authorized = 1;
-            $keyType = 0;
+            $keyType = 1;
             break;
-        }
-    }
-
-    if ($Authorized != 1) {
-        $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-        while ($line = $DatabaseQuery->fetchArray()) {
-            if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0 && ($enableTemporaryKeys || $enableTemporaryKeys == "true")) {
-                $uploadsLeft = $line['uploadsleft'] - 1;
-                $id = $line['id'];
-                $keyID = $id;
-
-                $Database->exec("UPDATE tkeys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
-
-                if ($storeLastUsage || $storeLastUsage == "true") {
-                    $lastUsed = date($dateFormat);
-                    $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id='$id'");
-                }
-
-                if ($storeUploads || $storeUploads == "true") {
-                    $numberOfUploads = $line['numberofuploads'] + 1;
-                    $Database->exec("UPDATE tkeys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
-                }
-
-                if ($storeIP || $storeIP == "true") {
-                    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                        $ip = $_SERVER['HTTP_CLIENT_IP'];
-                    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                    } else {
-                        $ip = $_SERVER['REMOTE_ADDR'];
-                    }
-
-                    $Database->exec("UPDATE tkeys SET ip='$ip' WHERE id='$id'");
-                }
-
-                if ($storeAgent || $storeAgent == "true") {
-                    $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                    $Database->exec("UPDATE tkeys SET useragent='$userAgent' WHERE id='$id'");
-                }
-
-                $Authorized = 1;
-                $keyType = 1;
-                break;
-            }
         }
     }
 
@@ -138,19 +95,12 @@ if (!$publicUploading || $publicUploading == "false") {
                 $Database->exec("UPDATE admins SET numberofuploads='$numberOfUploads' WHERE id='$id'");
 
                 if ($storeIP || $storeIP == "true") {
-                    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                        $ip = $_SERVER['HTTP_CLIENT_IP'];
-                    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                    } else {
-                        $ip = $_SERVER['REMOTE_ADDR'];
-                    }
-
+                    $ip = getIPAddress();
                     $Database->exec("UPDATE admins SET ip='$ip' WHERE id='$id'");
                 }
 
                 if ($storeAgent || $storeAgent == "true") {
-                    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                    $userAgent = getUserAgent();
                     $Database->exec("UPDATE admins SET useragent='$userAgent' WHERE id='$id'");
                 }
 

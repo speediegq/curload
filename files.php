@@ -37,26 +37,16 @@ if (isset($_COOKIE[$cookieTypeName]) && (!$publicUploading || $publicUploading =
         $keytypeID = $line['keytype'];
         $CorrectFile = 0;
 
-        if ($line['keytype'] == 0) {
+        if ($line['keytype'] == 1) {
             $keyType = "Key";
-        } else if ($line['keytype'] == 1) {
-            $keyType = "Temporary";
         } else if ($line['keytype'] == 2) {
             $keyType = "Administrator";
         } else {
             $keyType = "Unknown";
         }
 
-        if ($keytypeID == 0) { // is it a normal key?
+        if ($keytypeID == 1) { // key?
             $UserDatabaseQuery = $Database->query('SELECT * FROM keys');
-            while ($uline = $UserDatabaseQuery->fetchArray()) {
-                if ($uline['id'] == $keyID && $keytypeID == 0 && $_COOKIE[$cookieName] == $uline['key']) {
-                    $CorrectFile = 1;
-                    break;
-                }
-            }
-        } else if ($keytypeID == 1) { // no?
-            $UserDatabaseQuery = $Database->query('SELECT * FROM tkeys');
             while ($uline = $UserDatabaseQuery->fetchArray()) {
                 if ($uline['id'] == $keyID && $keytypeID == 1 && $_COOKIE[$cookieName] == $uline['key']) {
                     $CorrectFile = 1;

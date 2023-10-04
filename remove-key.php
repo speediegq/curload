@@ -60,26 +60,10 @@ if ($AuthorizedRemoval != 1) {
 
 $DatabaseQuery = $Database->query('SELECT * FROM keys');
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($type != 0) break;
-    if ($line['id'] == $id && $line['id'] != "" && $id != "") { // passed ID is a key that exists
-        if ($AuthorizedRemoval == 1) {
-            $Database->exec("DELETE FROM keys WHERE id='$id'");
-            $Removed = 1;
-        } else {
-            print "You aren't authorized to perform this action.";
-            die();
-        }
-
-        break;
-    }
-}
-
-$DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-while ($line = $DatabaseQuery->fetchArray()) {
     if ($type != 1) break;
     if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1) { // passed ID is a key that exists
         if ($AuthorizedRemoval == 1) {
-            $Database->exec("DELETE FROM tkeys WHERE id='$id'");
+            $Database->exec("DELETE FROM keys WHERE id='$id'");
             $Removed = 1;
         } else {
             print "You aren't authorized to perform this action.";

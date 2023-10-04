@@ -40,7 +40,7 @@ if (isset($_REQUEST['key'])) {
     // check the validity of the key
     $Database = createTables($sqlDB);
 
-    // Regular keys
+    // Temporary keys
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
@@ -54,59 +54,14 @@ if (isset($_REQUEST['key'])) {
 
             // update IP address
             if ($storeIP || $storeIP == "true") {
-                if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                    $ip = $_SERVER['HTTP_CLIENT_IP'];
-                } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                } else {
-                    $ip = $_SERVER['REMOTE_ADDR'];
-                }
-
+                $ip = getIPAddress();
                 $Database->exec("UPDATE keys SET ip='$ip' WHERE id='$id'");
             }
 
             // update user agent
             if ($storeAgent || $storeAgent == "true") {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $userAgent = getUserAgent();
                 $Database->exec("UPDATE keys SET useragent='$userAgent' WHERE id='$id'");
-            }
-
-            $Authorized = 1;
-            $KeyType = 0;
-
-            break;
-        }
-    }
-
-    // Temporary keys
-    $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && ($enableTemporaryKeys || $enableTemporaryKeys == "true")) {
-            $id = $line['id'];
-
-            // update last usage
-            if ($storeLastUsage || $storeLastUsage == "true") {
-                $lastUsed = date($dateFormat);
-                $Database->exec("UPDATE tkeys SET lastused='$lastUsed' WHERE id='$id'");
-            }
-
-            // update IP address
-            if ($storeIP || $storeIP == "true") {
-                if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                    $ip = $_SERVER['HTTP_CLIENT_IP'];
-                } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                } else {
-                    $ip = $_SERVER['REMOTE_ADDR'];
-                }
-
-                $Database->exec("UPDATE tkeys SET ip='$ip' WHERE id='$id'");
-            }
-
-            // update user agent
-            if ($storeAgent || $storeAgent == "true") {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $Database->exec("UPDATE tkeys SET useragent='$userAgent' WHERE id='$id'");
             }
 
             $Authorized = 1;
@@ -130,20 +85,13 @@ if (isset($_REQUEST['key'])) {
 
             // update IP address
             if ($storeIP || $storeIP == "true") {
-                if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                    $ip = $_SERVER['HTTP_CLIENT_IP'];
-                } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                } else {
-                    $ip = $_SERVER['REMOTE_ADDR'];
-                }
-
+                $ip = getIPAddress();
                 $Database->exec("UPDATE admins SET ip='$ip' WHERE id='$id'");
             }
 
             // update user agent
             if ($storeAgent || $storeAgent == "true") {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $userAgent = getUserAgent();
                 $Database->exec("UPDATE admins SET useragent='$userAgent' WHERE id='$id'");
             }
 

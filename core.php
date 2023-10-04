@@ -85,7 +85,7 @@ function printFileUploadForm($html, $Error) {
         } else if ($Error == "size") {
             $html .= "\t\t\t<p class=\"error\">File is too big.</p>\n";
         } else if ($Error == "key") {
-            $html .= "\t\t\t<p class=\"error\">Invalid key. WTF?</p>\n";
+            $html .= "\t\t\t<p class=\"error\">File upload failed: No uploads left.</p>\n";
         } else if ($Error == "wtf") {
             $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
         }
@@ -110,6 +110,20 @@ function checkIfAdminExists() {
     }
 
     return $adminExists;
+}
+
+function getIPAddress() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+function getUserAgent() {
+    return $_SERVER['HTTP_USER_AGENT'];
 }
 
 ?>

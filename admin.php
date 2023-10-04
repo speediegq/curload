@@ -110,10 +110,8 @@ if ($Action == "files") {
         $keyID = $line['keyid'];
         $keytypeID = $line['keytype'];
 
-        if ($line['keytype'] == 0) {
+        if ($line['keytype'] == 1) {
             $keyType = "Key";
-        } else if ($line['keytype'] == 1) {
-            $keyType = "Temporary";
         } else if ($line['keytype'] == 2) {
             $keyType = "Administrator";
         } else {
@@ -241,40 +239,13 @@ if ($Action == "files") {
         $IP = $line['ip'];
         $UserAgent = $line['useragent'];
 
-        $keyType = "Key";
-        $UploadsLeft = "∞";
-
-        $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-0-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=0\">Remove</a></td>\n";
-        $html .= "\t\t\t\t\t</tr>\n";
-    }
-
-    $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['id'] != $filterID && $filterID != -1) {
-            continue;
-        }
-
-        $ID = $line['id'];
-        $Key = $line['key'];
-        $NumberOfUploads = $line['numberofuploads'];
-        $UploadsLeft = "";
-        $LastUsed = $line['lastused'];
-        $Issued = $line['issued'];
-        $IP = $line['ip'];
-        $UserAgent = $line['useragent'];
-
         $keyType = "Temporary";
         $UploadsLeft = $line['uploadsleft'];
+
+        if ($line['uploadsleft'] == -1) {
+            $UploadsLeft = "∞";
+            $keyType = "Key";
+        }
 
         $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-1-$ID\">$ID</td>\n";

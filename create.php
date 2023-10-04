@@ -6,20 +6,7 @@
 
 include "config.php";
 include "create-table.php";
-
-function getIPAddress() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-        return $_SERVER['REMOTE_ADDR'];
-    }
-}
-
-function getUserAgent() {
-    return $_SERVER['HTTP_USER_AGENT'];
-}
+include "core.php";
 
 $Redirect = "";
 $uploadsLeft = 1;
@@ -117,6 +104,8 @@ if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
 
         die();
     }
+} else {
+    $uploadsLeft = -1;
 }
 
 if ($Type == "Admin") {
@@ -171,46 +160,7 @@ if ($Type == "Admin") {
     }
 
     $Database->exec("INSERT INTO admins(key, primaryadmin, numberofuploads, lastused, issued, ip, useragent) VALUES('$Data', '$primary', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
-} else if ($Type == "Temporary") {
-    $DatabaseQuery = $Database->query('SELECT * FROM tkeys');
-    while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
-            if ($Redirect == "admin") {
-                header("Location: admin.php?action=create&e=exists");
-            } else if ($Redirect == "setup") {
-                header("Location: setup.php?e=exists");
-            } else {
-                header("Location: /");
-            }
-
-            die();
-        }
-    }
-
-    $numberOfUploads = 0;
-    $lastUsed = "";
-    $Issued = "";
-    $ip = "";
-    $userAgent = "";
-
-    if ($storeAgent || $storeAgent == "true") {
-        $userAgent = getUserAgent();
-    }
-
-    if ($storeIssued || $storeIssued == "true") {
-        $Issued = date($dateFormat);
-    }
-
-    if ($storeLastUsage || $storeLastUsage == "true") {
-        $lastUsed = date($dateFormat);
-    }
-
-    if ($storeIP || $storeIP == "true") {
-        $ip = getIPAddress();
-    }
-
-    $Database->exec("INSERT INTO tkeys(key, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Data', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
-} else if ($Type == "Key") {
+} else if ($Type == "Temporary" || $Type == "Key") {
     $DatabaseQuery = $Database->query('SELECT * FROM keys');
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['key'] == "$Data" && $Data != "" && $line['key'] != "") {
@@ -248,7 +198,7 @@ if ($Type == "Admin") {
         $ip = getIPAddress();
     }
 
-    $Database->exec("INSERT INTO keys(key, numberofuploads, lastused, issued, ip, useragent) VALUES('$Data', '$numberOfUploads', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    $Database->exec("INSERT INTO keys(key, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Data', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=type");

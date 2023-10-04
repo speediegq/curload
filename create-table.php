@@ -23,24 +23,13 @@ function createTables($sqlDB) {
      * id (INTEGER PRIMARY KEY)
      * key (TEXT)
      * numberofuploads (INT)
-     * lastused (INT)
-     * issued (TEXT)
-     * ip (TEXT)
-     * useragent (TEXT)
-     */
-    $Database->exec("CREATE TABLE IF NOT EXISTS keys(id INTEGER PRIMARY KEY, key TEXT, numberofuploads INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
-
-    /* temporary keys table
-     * id (INTEGER PRIMARY KEY)
-     * key (TEXT)
-     * numberofuploads (INT)
      * uploadsleft (INT)
      * lastused (TEXT)
      * issued (TEXT)
      * ip (TEXT)
      * useragent (TEXT)
      */
-    $Database->exec("CREATE TABLE IF NOT EXISTS tkeys(id INTEGER PRIMARY KEY, key TEXT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+    $Database->exec("CREATE TABLE IF NOT EXISTS keys(id INTEGER PRIMARY KEY, key TEXT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
 
     /* uploads table
      * id (INTEGER PRIMARY KEY)

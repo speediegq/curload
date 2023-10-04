@@ -54,18 +54,6 @@ while ($line = $DatabaseQuery->fetchArray()) {
             }
         }
 
-        // check if our key is a temporary key
-        if (($enableKeys || $enableKeys == "true") && ($enableKeyUploadRemoval || $enableKeyUploadRemoval == "true")) {
-            $keyDatabaseQuery = $Database->query('SELECT * FROM tkeys');
-
-            while ($kline = $keyDatabaseQuery->fetchArray()) {
-                if ($line['keyid'] == $kline['id']) {
-                    $AuthorizedRemoval = 1;
-                    break;
-                }
-            }
-        }
-
         // check if the key is an admin key, automatically making it authorized to remove the file provided it wasn't uploaded by a primary admin
         if ($AuthorizedRemoval != 1 && ($enableUploadRemoval || $enableUploadRemoval == "true")) {
             $keyDatabaseQuery = $Database->query('SELECT * FROM admins');
