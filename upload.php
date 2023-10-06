@@ -29,7 +29,6 @@ $Status = 0;
 $Authorized = 0;
 $userType = 1;
 $uploadLimit = $maxFileSize * 1000000;
-$Username = "";
 
 if (!isset($_FILES['file']['name']) || $_FILES['file']['name'] == "") {
     if ($WebInterface == 0) {

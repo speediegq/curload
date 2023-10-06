@@ -4,28 +4,29 @@
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
-$Stylesheet             = "index.css";
-$javaScript             = "index.js";
-$Icon                   = "favicon.svg";
-$Logo                   = "logo.svg";
-$uploadDir              = "uploads/";
-$maxFileSize            = "100";
-$sqlDB                  = "curload.sql";
-$storeIP                = true;
-$storeAgent             = true;
-$storeIssued            = true;
-$storeLastUsage         = true;
-$storeUploads           = true;
-$publicUploading        = false;
-$renameDuplicates       = true;
-$replaceOriginal        = false;
-$logoHeaderSize         = 16;
-$dateFormat             = "Y/m/d";
-$instanceName           = "curload";
-$instanceDescription    = "curload is a simple file uploading site allowing users to upload files.";
-$footerText             = "Licensed under the GNU Affero General Public License version 3.0.";
-$enableUploadRemoval    = true;
+$Stylesheet              = "index.css";
+$javaScript              = "index.js";
+$Icon                    = "favicon.svg";
+$Logo                    = "logo.svg";
+$uploadDir               = "uploads/";
+$maxFileSize             = "100";
+$sqlDB                   = "curload.sql";
+$storeIP                 = true;
+$storeAgent              = true;
+$storeIssued             = true;
+$storeLastUsage          = true;
+$storeUploads            = true;
+$publicUploading         = false;
+$renameDuplicates        = true;
+$replaceOriginal         = false;
+$logoHeaderSize          = 16;
+$dateFormat              = "Y/m/d";
+$instanceName            = "curload";
+$instanceDescription     = "curload is a simple file uploading site allowing users to upload files.";
+$footerText              = "Licensed under the GNU Affero General Public License version 3.0.";
+$enableUploadRemoval     = true;
 $enableUserUploadRemoval = false;
+$publicFileList          = false;
 
 $configFile = "";
 
@@ -64,5 +65,6 @@ $renameDuplicates = $configEntries['rename_duplicates'];
 $replaceOriginal = $configEntries['replace_original'];
 $enableUploadRemoval = $configEntries['enable_upload_removal'];
 $enableUserUploadRemoval = $configEntries['enable_user_upload_removal'];
+$publicFileList = $configEntries['public_file_list'];
 $javaScript = $configEntries['javascript'];
 ?>
