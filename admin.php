@@ -1,6 +1,6 @@
 <?php session_start();
 /* curload
- * Simple file uploading using POST requests and temporary keys
+ * Simple file uploading using POST requests
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
@@ -13,7 +13,7 @@ $Primary = 0;
 $filterID = -1;
 $Error = "";
 
-if (!isset($_SESSION['key']) || !isset($_SESSION['type'])) {
+if (!isset($_SESSION['username']) || !isset($_SESSION['password']) || !isset($_SESSION['type'])) {
     header('Location: login.php?redir=admin');
     die();
 } else if ($_SESSION['type'] != 2) { // not allowed
@@ -39,17 +39,11 @@ if (!isset($_REQUEST['e'])) {
     $Error = $_REQUEST['e'];
 }
 
-// in case admin keys are disabled
-if (!$enableAdminKeys || $enableAdminKeys == "false") {
-    header('Location: /');
-    die();
-}
-
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM keys');
+$DatabaseQuery = $Database->query('SELECT * FROM users');
 
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['key'] == $_SESSION['key'] && $_SESSION['key'] != "" && $line['key'] != "" && $line['keytype'] == 2 && ($enableKeys || $enableKeys == "true")) {
+    if ($line['username'] == $_SESSION['username'] && $_SESSION['username'] != "" && $line['password'] == $_SESSION['password'] && $_SESSION['password'] != "" && $line['usertype'] == 2) {
         $Authorized = 1;
         $Primary = $line['primaryadmin'];
         break;
@@ -75,10 +69,10 @@ if ($Action == "files") {
     $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=files\">Files</a>\n";
 }
 
-if ($Action == "keys") {
-    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=keys\" id='sel'>Keys</a>\n";
+if ($Action == "users") {
+    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=users\" id='sel'>Users</a>\n";
 } else {
-    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=keys\">Keys</a>\n";
+    $html .= "\t\t\t\t\t\t<a href=\"/admin.php?action=users\">Users</a>\n";
 }
 
 if ($Action == "create") {
@@ -98,31 +92,31 @@ if ($Action == "files") {
     $html .= "\t\t\t\t\t\t<th class=\"adminID\">ID</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminFilename\">Filename</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminUploadDate\">Upload date</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"adminKeyID\">Key ID</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"adminKeyType\">Key type</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"adminUploader\">Uploader</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"adminuserType\">User type</th>\n";
     $html .= "\t\t\t\t\t</tr>\n";
 
     while ($line = $DatabaseQuery->fetchArray()) {
         $ID = $line['id'];
         $Filename = $line['file'];
         $uploadDate = $line['uploaddate'];
-        $keyID = $line['keyid'];
-        $keytypeID = $line['keytype'];
+        $Username = $line['username'];
+        $usertypeID = $line['usertype'];
 
-        if ($line['keytype'] == 1) {
-            $keyType = "Key";
-        } else if ($line['keytype'] == 2) {
-            $keyType = "Administrator";
+        if ($line['usertype'] == 1) {
+            $userType = "User";
+        } else if ($line['usertype'] == 2) {
+            $userType = "Administrator";
         } else {
-            $keyType = "Unknown";
+            $userType = "Unknown";
         }
 
         $html .= "\t\t\t\t\t<tr class=\"adminFileView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"adminID-$ID\">$ID</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminFilename\"><a href=\"$Filename\">$Filename</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadDate\">$uploadDate</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyID\"><a href=\"admin.php?action=keys#id-$keytypeID-$keyID\">$keyID</a></td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminUsername\"><a href=\"admin.php?action=users#id-$usertypeID-$Username\">$Username</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminuserType\">$userType</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove.php?redir=admin&id=$ID\">Remove</a></td>\n";
 
         $html .= "\t\t\t\t\t</tr>\n";
@@ -131,65 +125,70 @@ if ($Action == "files") {
     $html .= "\t\t\t\t</table>\n";
 } else if ($Action == "create") {
     $html .= "\t\t\t\t<form class=\"adminCreateForm\" action=\"create.php?redir=admin\" method=\"post\">\n";
-    $html .= "\t\t\t\t\t<label for=\"type\">Type</label>\n";
+    $html .= "\t\t\t\t\t<label for=\"type\">User type</label>\n";
     $html .= "\t\t\t\t\t<select name=\"type\" required>\n";
 
     if ($Primary == 1) {
         $html .= "\t\t\t\t\t\t<option value=\"Admin\">Administrator</option>\n";
     }
 
-    $html .= "\t\t\t\t\t\t<option value=\"Key\" selected=\"selected\">Key</option>\n";
-    $html .= "\t\t\t\t\t\t<option value=\"Temporary\">Temporary Key</option>\n";
+    $html .= "\t\t\t\t\t\t<option value=\"User\" selected=\"selected\">User</option>\n";
+    $html .= "\t\t\t\t\t\t<option value=\"Temporary\">Temporary User</option>\n";
     $html .= "\t\t\t\t\t</select>\n";
-    $html .= "\t\t\t\t\t<label for=\"data\">Key</label>\n";
-    $html .= "\t\t\t\t\t<input type=\"text\" name=\"data\" placeholder=\"Key\">\n";
+    $html .= "\t\t\t\t\t<label for=\"username\">Username</label>\n";
+    $html .= "\t\t\t\t\t<input type=\"text\" name=\"username\" placeholder=\"Username\">\n";
+    $html .= "\t\t\t\t\t<label for=\"password\">Password</label>\n";
+    $html .= "\t\t\t\t\t<input type=\"text\" name=\"password\" placeholder=\"Password\">\n";
+    $html .= "\t\t\t\t\t<br><br>\n";
     $html .= "\t\t\t\t\t<label for=\"uploadsleft\">Number</label>\n";
     $html .= "\t\t\t\t\t<input type=\"number\" name=\"uploadsleft\" min=\"1\" value=\"1\">\n";
-    $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Create key\" name=\"create\">\n";
+    $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Create user\" name=\"create\">\n";
     $html .= "\t\t\t\t</form>\n";
 
     // handle errors
     if ($Error == "data") {
-        $html .= "\t\t\t\t<p class=\"adminError\">Invalid key.</p>\n";
+        $html .= "\t\t\t\t<p class=\"adminError\">Invalid user.</p>\n";
     } else if ($Error == "type") {
         $html .= "\t\t\t\t<p class=\"adminError\">Invalid type.</p>\n";
     } else if ($Error == "denied") {
-        $html .= "\t\t\t\t<p class=\"adminError\">You don't have permission to create a key of this type.</p>\n";
+        $html .= "\t\t\t\t<p class=\"adminError\">You don't have permission to create a user of this type.</p>\n";
     } else if ($Error == "exists") {
-        $html .= "\t\t\t\t<p class=\"adminError\">This key already exists.</p>\n";
+        $html .= "\t\t\t\t<p class=\"adminError\">This user already exists.</p>\n";
     } else if ($Error == "uploads") {
         $html .= "\t\t\t\t<p class=\"adminError\">Invalid amount of uploads.</p>\n";
+    } else if ($Error == "username") {
+        $html .= "\t\t\t\t<p class=\"adminError\">You must specify a username.</p>\n";
     }
-} else if ($Action == "keys") {
+} else if ($Action == "users") {
     if ($Primary != 1) {
-        $html .= "\t\t\t\t<p class=\"adminWarning\">Administrator keys are not visible.</p>\n";
+        $html .= "\t\t\t\t<p class=\"adminWarning\">Administrator users are not visible.</p>\n";
     }
 
-    $html .= "\t\t\t\t<table class=\"adminKeyView\">\n";
-    $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
+    $html .= "\t\t\t\t<table class=\"adminUserView\">\n";
+    $html .= "\t\t\t\t\t<tr class=\"adminUserView\">\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminID\">ID</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"adminKey\">Key</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"adminUser\">User</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminNumberOfUploads\">Uploads</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminUploadsLeft\">Uploads left</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminLastUsed\">Last used</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminIssued\">Issued</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminIP\">IP</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminUserAgent\">User agent</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"adminKeyType\">Key type</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"adminuserType\">User type</th>\n";
     $html .= "\t\t\t\t\t</tr>\n";
 
-    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+    $DatabaseQuery = $Database->query('SELECT * FROM users');
     while ($line = $DatabaseQuery->fetchArray()) {
         if ($line['id'] != $filterID && $filterID != -1) {
             continue;
         }
 
-        if ($line['keytype'] == 2 && $Primary != 1) {
+        if ($line['usertype'] == 2 && $Primary != 1) {
             continue;
         }
 
         $ID = $line['id'];
-        $Key = $line['key'];
+        $Username = $line['username'];
         $NumberOfUploads = $line['numberofuploads'];
         $UploadsLeft = "";
         $LastUsed = $line['lastused'];
@@ -197,34 +196,34 @@ if ($Action == "files") {
         $IP = $line['ip'];
         $UserAgent = $line['useragent'];
 
-        $keyType = "Temporary";
+        $userType = "Temporary";
         $UploadsLeft = $line['uploadsleft'];
 
         if ($line['uploadsleft'] == -1) {
             $UploadsLeft = "∞";
-            $keyType = "Key";
+            $userType = "User";
         }
-        if ($line['keytype'] == 2) {
-            $keyType = "Administrator";
+        if ($line['usertype'] == 2) {
+            $userType = "Administrator";
 
             if ($line['primaryadmin'] == 1) {
-                $keyType = "Primary Administrator";
+                $userType = "Primary Administrator";
             }
         }
 
-        $html .= "\t\t\t\t\t<tr class=\"adminKeyView\">\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-1-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKey\">$Key</td>\n";
+        $html .= "\t\t\t\t\t<tr class=\"adminUserView\">\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"id-1-$Username\">$ID</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminUser\">$Username</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminKeyType\">$keyType</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminuserType\">$userType</td>\n";
 
         if ($Primary == 1 && $line['primaryadmin'] != 1) { // primary admins cannot be removed
-            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-key.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
+            $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-user.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
         }
 
         $html .= "\t\t\t\t\t</tr>\n";

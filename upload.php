@@ -1,6 +1,6 @@
 <?php session_start();
 /* curload
- * Simple file uploading using POST requests and temporary keys
+ * Simple file uploading using POST requests
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
@@ -9,22 +9,27 @@ include "core.php";
 
 $WebInterface = 1;
 
-if (isset($_REQUEST['key'])) {
-    $Key = $_REQUEST['key'];
+$Username = "";
+$Password = "";
+
+if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
+    $Username = $_REQUEST['username'];
+    $Password = $_REQUEST['password'];
     $WebInterface = 0;
-} else if (isset($_SESSION['key'])) {
-    $Key = $_SESSION['key'];
+} else if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
+    $Username = $_SESSION['username'];
+    $Password = $_SESSION['password'];
     $WebInterface = 1;
 } else if (!$publicUploading || $publicUploading == "false") {
-    print "No key specified.";
+    print "Username and password must be specified.";
     die();
 }
 
 $Status = 0;
 $Authorized = 0;
-$keyType = 1;
+$userType = 1;
 $uploadLimit = $maxFileSize * 1000000;
-$keyID = 0;
+$Username = "";
 
 if (!isset($_FILES['file']['name']) || $_FILES['file']['name'] == "") {
     if ($WebInterface == 0) {
@@ -40,51 +45,52 @@ $Database = createTables($sqlDB);
 
 // init database
 if (!$publicUploading || $publicUploading == "false") {
-    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+    $DatabaseQuery = $Database->query('SELECT * FROM users');
+
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['key'] == $Key && $Key != "" && $line['key'] != "" && $line['uploadsleft'] != 0 && ($enableKeys || $enableKeys == "true")) {
+        if ($line['username'] == $Username && $Username != "" && $line['password'] != "" && $Password == $line['password'] && $line['uploadsleft'] != 0) {
             $id = $line['id'];
-            $keyID = $id;
+            $Username = $line['username'];
 
             // decrease uploads left if temporary
             if ($line['uploadsleft'] != -1) {
                 $uploadsLeft = $line['uploadsleft'] - 1;
-                $Database->exec("UPDATE keys SET uploadsleft='$uploadsLeft' WHERE id='$id'");
+                $Database->exec("UPDATE users SET uploadsleft='$uploadsLeft' WHERE id='$id'");
             }
 
             if ($storeLastUsage || $storeLastUsage == "true") {
                 $lastUsed = date($dateFormat);
-                $Database->exec("UPDATE keys SET lastused='$lastUsed' WHERE id='$id'");
+                $Database->exec("UPDATE users SET lastused='$lastUsed' WHERE id='$id'");
             }
 
             if ($storeUploads || $storeUploads == "true") {
                 $numberOfUploads = $line['numberofuploads'] + 1;
-                $Database->exec("UPDATE keys SET numberofuploads='$numberOfUploads' WHERE id='$id'");
+                $Database->exec("UPDATE users SET numberofuploads='$numberOfUploads' WHERE id='$id'");
             }
 
             if ($storeIP || $storeIP == "true") {
                 $ip = getIPAddress();
-                $Database->exec("UPDATE keys SET ip='$ip' WHERE id='$id'");
+                $Database->exec("UPDATE users SET ip='$ip' WHERE id='$id'");
             }
 
             if ($storeAgent || $storeAgent == "true") {
                 $userAgent = getUserAgent();
-                $Database->exec("UPDATE keys SET useragent='$userAgent' WHERE id='$id'");
+                $Database->exec("UPDATE users SET useragent='$userAgent' WHERE id='$id'");
             }
 
             $Authorized = 1;
-            $keyType = $line['keytype'];
+            $userType = $line['usertype'];
             break;
         }
     }
 
-    // Not an authorized key
+    // Not authorized
     if ($Authorized == 0) {
         if ($WebInterface == 0) {
-            print "Not authorized: Your key is invalid.";
+            print "Not authorized: Your username or password is invalid.";
             die();
         } else {
-            header("Location: /?e=key");
+            header("Location: /?e=user");
             die();
         }
     }
@@ -136,7 +142,7 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
 
     $lastUsed = date($dateFormat);
     $DatabaseQuery = $Database->query('SELECT * FROM uploads');
-    $Database->exec("INSERT INTO uploads(file, uploaddate, keyid, keytype) VALUES('$uploadedFile', '$lastUsed', '$keyID', '$keyType')");
+    $Database->exec("INSERT INTO uploads(file, uploaddate, username, usertype) VALUES('$uploadedFile', '$lastUsed', '$Username', '$userType')");
 
     if ($WebInterface == 0) {
         print "$uploadedFile";

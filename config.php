@@ -1,6 +1,6 @@
 <?php
 /* curload
- * Simple file uploading using POST requests and temporary keys
+ * Simple file uploading using POST requests
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
@@ -22,13 +22,10 @@ $replaceOriginal        = false;
 $logoHeaderSize         = 16;
 $dateFormat             = "Y/m/d";
 $instanceName           = "curload";
-$instanceDescription    = "curload is a simple file uploading site allowing users to upload files by authenticating using a key.";
+$instanceDescription    = "curload is a simple file uploading site allowing users to upload files.";
 $footerText             = "Licensed under the GNU Affero General Public License version 3.0.";
-$enableKeys             = true;
-$enableAdminKeys        = true;
-$enableTemporaryKeys    = true;
 $enableUploadRemoval    = true;
-$enableKeyUploadRemoval = false;
+$enableUserUploadRemoval = false;
 
 $configFile = "";
 
@@ -65,10 +62,7 @@ $footerText = $configEntries['footer_text'];
 $publicUploading = $configEntries['public_uploading'];
 $renameDuplicates = $configEntries['rename_duplicates'];
 $replaceOriginal = $configEntries['replace_original'];
-$enableKeys = $configEntries['enable_keys'];
-$enableAdminKeys = $configEntries['enable_admin_keys'];
-$enableTemporaryKeys = $configEntries['enable_temporary_keys'];
 $enableUploadRemoval = $configEntries['enable_upload_removal'];
-$enableKeyUploadRemoval = $configEntries['enable_key_upload_removal'];
+$enableUserUploadRemoval = $configEntries['enable_user_upload_removal'];
 $javaScript = $configEntries['javascript'];
 ?>

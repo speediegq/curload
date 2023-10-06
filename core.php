@@ -1,16 +1,17 @@
 <?php
 /* curload
- * Simple file uploading using POST requests and temporary keys
+ * Simple file uploading using POST requests
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
 function createTables($sqlDB) {
     $Database = new SQLite3($sqlDB);
 
-    /* keys table
+    /* users table
      * id (INTEGER PRIMARY KEY)
-     * key (TEXT)
-     * keytype (INT)
+     * username (TEXT)
+     * password (TEXT)
+     * usertype (INT)
      * primaryadmin (INT)
      * numberofuploads (INT)
      * uploadsleft (INT)
@@ -19,16 +20,16 @@ function createTables($sqlDB) {
      * ip (TEXT)
      * useragent (TEXT)
      */
-    $Database->exec("CREATE TABLE IF NOT EXISTS keys(id INTEGER PRIMARY KEY, key TEXT, keytype INT, primaryadmin INT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+    $Database->exec("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT, password TEXT, usertype INT, primaryadmin INT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
 
     /* uploads table
      * id (INTEGER PRIMARY KEY)
      * file (TEXT)
      * uploaddate (TEXT)
-     * keyid (INT) (THIS IS THE ID OF THE KEY USED TO UPLOAD THE FILE)
-     * keytype (INT)
+     *usernameeyusername (INT)
+     * usertype (INT)
      */
-    $Database->exec("CREATE TABLE IF NOT EXISTS uploads(id INTEGER PRIMARY KEY, file TEXT, uploaddate TEXT, keyid INT, keytype INT)");
+    $Database->exec("CREATE TABLE IF NOT EXISTS uploads(id INTEGER PRIMARY KEY, file TEXT, uploaddate TEXT, username TEXT, usertype INT)");
 
     return $Database;
 }
@@ -51,7 +52,7 @@ function printHeader($html) {
     $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
-    if (isset($_SESSION['key'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+    if (isset($_SESSION['type'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
 
     foreach (glob('*.php') as $file) {
         if (!file_exists("$file".".name")) {
@@ -63,7 +64,7 @@ function printHeader($html) {
         $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
     }
 
-    if (!isset($_SESSION['key'])) {
+    if (!isset($_SESSION['type'])) {
         $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
     } else {
         $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
@@ -113,7 +114,7 @@ function printFileUploadForm($html, $Error) {
             $html .= "\t\t\t<p class=\"error\">No file specified.</p>\n";
         } else if ($Error == "size") {
             $html .= "\t\t\t<p class=\"error\">File is too big.</p>\n";
-        } else if ($Error == "key") {
+        } else if ($Error == "user") {
             $html .= "\t\t\t<p class=\"error\">File upload failed: No uploads left.</p>\n";
         } else if ($Error == "wtf") {
             $html .= "\t\t\t<p class=\"error\">WTF? Try again.</p>\n";
@@ -129,11 +130,11 @@ function checkIfAdminExists() {
     $adminExists = 0;
 
     $Database = createTables($sqlDB);
-    $DatabaseQuery = $Database->query('SELECT * FROM keys');
+    $DatabaseQuery = $Database->query('SELECT * FROM users');
 
     $adminExists = 0;
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['keytype'] == 2) {
+        if ($line['usertype'] == 2) {
             $adminExists = 1;
             break;
         }
@@ -154,6 +155,10 @@ function getIPAddress() {
 
 function getUserAgent() {
     return $_SERVER['HTTP_USER_AGENT'];
+}
+
+function generatePassword($pwd) {
+    return password_hash($pwd, PASSWORD_DEFAULT);
 }
 
 ?>

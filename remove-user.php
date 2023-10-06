@@ -1,13 +1,13 @@
 <?php session_start();
 /* curload
- * Simple file uploading using POST requests and temporary keys
+ * Simple file uploading using POST requests
  * Licensed under the GNU Affero General Public License version 3.0
  */
 
 include "config.php";
 include "core.php";
 
-if (!isset($_SESSION['key']) || !isset($_SESSION['type'])) {
+if (!isset($_SESSION['username']) ||  !isset($_SESSION['password']) || !isset($_SESSION['type'])) {
     header('Location: login.php?redir=admin');
     die();
 } else if ($_SESSION['type'] != 2) { // not allowed
@@ -16,7 +16,7 @@ if (!isset($_SESSION['key']) || !isset($_SESSION['type'])) {
 }
 
 $AdminIsPrimary = 0;
-$KeyIsPrimary = 0;
+$UserIsPrimary = 0;
 $AuthorizedRemoval = 0;
 $Removed = 0;
 $Redirect = "";
@@ -42,10 +42,10 @@ if (isset($_REQUEST['redir'])) {
 }
 
 $Database = createTables($sqlDB);
-$DatabaseQuery = $Database->query('SELECT * FROM keys');
+$DatabaseQuery = $Database->query('SELECT * FROM users');
 
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['keytype'] == 2 && $line['key'] == $_SESSION['key'] && $_SESSION['key'] != "" && $line['key'] != "" && ($enableKeys || $enableKeys == "true")) {
+    if ($line['usertype'] == 2 && $line['username'] == $_SESSION['username'] && $_SESSION['username'] != "" && $line['password'] == $_SESSION['password'] && $_SESSION['password'] != "") {
         $AuthorizedRemoval = 1;
         $AdminIsPrimary = $line['primaryadmin'];
         break;
@@ -58,11 +58,11 @@ if ($AuthorizedRemoval != 1) {
     die();
 }
 
-$DatabaseQuery = $Database->query('SELECT * FROM keys');
+$DatabaseQuery = $Database->query('SELECT * FROM users');
 while ($line = $DatabaseQuery->fetchArray()) {
-    if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1 && $line['primaryadmin'] != 1) { // passed ID is a key that exists
+    if ($line['id'] == $id && $line['id'] != "" && $id != "" && $Removed != 1 && $line['primaryadmin'] != 1) {
         if ($AuthorizedRemoval == 1 && (($AdminIsPrimary == 1 && $line['id'] == 2) || $line['id'] != 2)) {
-            $Database->exec("DELETE FROM keys WHERE id='$id'");
+            $Database->exec("DELETE FROM users WHERE id='$id'");
             $Removed = 1;
         } else {
             print "You aren't authorized to perform this action.";
@@ -74,7 +74,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 }
 
 if ($Redirect == "admin") {
-    header("Location: admin.php?action=keys");
+    header("Location: admin.php?action=users");
 } else {
     header("Location: /");
 }
