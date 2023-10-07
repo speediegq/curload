@@ -47,7 +47,14 @@ if (!$publicUploading || $publicUploading == "false") {
     $DatabaseQuery = $Database->query('SELECT * FROM users');
 
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['username'] == $Username && $Username != "" && $line['password'] != "" && $Password == $line['password'] && $line['uploadsleft'] != 0) {
+        $ValidPassword = false;
+
+        if ($WebInterface == 1 && $Password == $line['password']) {
+            $ValidPassword = true;
+        } else if ($WebInterface == 0 && password_verify($Password, $line['password'])) {
+            $ValidPassword = true; // we passed a plain text password
+        }
+        if ($line['username'] == $Username && $Username != "" && $ValidPassword && $line['uploadsleft'] != 0) {
             $id = $line['id'];
             $Username = $line['username'];
 
