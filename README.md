@@ -33,7 +33,7 @@ by creating a PHP script (see `about.php` for an example) as well as a
 
 You can modify all of the PHP, but I've tried to keep it sort of user friendly.
 It is possible to style curload by using CSS classes and IDs. It is also
-possible to include JavaScript, although none is used by default.
+possible to include JavaScript.
 
 ## License
 

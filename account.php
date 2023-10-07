@@ -92,6 +92,7 @@ if ($allowPasswordChange || $IsCurrentUser) {
         $html .= "\t\t\t\t\t\t<input type=\"password\" name=\"curpass\" placeholder=\"Current password\">\n";
     }
 
+    $html .= "\t\t\t\t\t\t<br><br>\n";
     $html .= "\t\t\t\t\t\t<label for=\"newpass\">New password</label>\n";
     $html .= "\t\t\t\t\t\t<input type=\"password\" name=\"newpass\" placeholder=\"New password\">\n";
     $html .= "\t\t\t\t\t\t<label for=\"newpassc\">Confirm</label>\n";

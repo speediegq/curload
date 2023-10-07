@@ -52,33 +52,92 @@ function printHeader($html) {
     $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
-    if (isset($_SESSION['type'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
-    if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">Find</a></small>\n";
 
-    foreach (glob('*.php') as $file) {
-        if (!file_exists("$file".".name")) {
-            continue;
+    // javascript free version
+    if (!$allowJavascript) {
+        if (isset($_SESSION['type'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+        if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">Find</a></small>\n";
+
+        foreach (glob('*.php') as $file) {
+            if (!file_exists("$file".".name")) {
+                continue;
+            }
+
+            $name = file_get_contents("$file".".name");
+            $name = rtrim($name, "\r\n");
+            $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
         }
 
-        $name = file_get_contents("$file".".name");
-        $name = rtrim($name, "\r\n");
-        $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
-    }
+        if (!isset($_SESSION['type'])) {
+            if ($publicAccountCreation) {
+                $html .= "\t\t\t\t<small id='register'><a id='register' href=\"register.php\">Register</a></small>\n";
+            }
 
-    if (!isset($_SESSION['type'])) {
-        if ($publicAccountCreation) {
-            $html .= "\t\t\t\t<small id='register'><a id='register' href=\"register.php\">Register</a></small>\n";
+            $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
+        } else {
+            $Username = $_SESSION['username'];
+            $html .= "\t\t\t\t<small id='username'><a id='username' href=\"account.php\">$Username</a></small>\n";
+            $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
         }
 
-        $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
-    } else {
-        $Username = $_SESSION['username'];
-        $html .= "\t\t\t\t<small id='username'><a id='username' href=\"account.php\">$Username</a></small>\n";
-        $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
-    }
+        if (isset($_SESSION['type']) && $_SESSION['type'] == 2) {
+            $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
+        }
+    } else { // yay (not) we can use JS, basically stolen from w3schools because i can't JS
+        $html .= "\t\t\t\t<script>\n";
+        $html .= "\t\t\t\t\tfunction pelem() {\n";
+        $html .= "\t\t\t\t\t\tdocument.getElementById(\"dropdown\").classList.toggle(\"show\");\n";
+        $html .= "\t\t\t\t\t}\n";
+        $html .= "\t\t\t\t\t\n";
+        $html .= "\t\t\t\t\twindow.onclick = function(event) {\n";
+        $html .= "\t\t\t\t\tif (!event.target.matches('.actionmenu')) {\n";
+        $html .= "\t\t\t\t\t\tvar dropdowns = document.getElementsByClassName(\"dropdown-content\");\n";
+        $html .= "\t\t\t\t\t\tvar i;\n";
+        $html .= "\t\t\t\t\t\tfor (i = 0; i < dropdowns.length; i++) {\n";
+        $html .= "\t\t\t\t\t\t\tvar openDropdown = dropdowns[i];\n";
+        $html .= "\t\t\t\t\t\t\tif (openDropdown.classList.contains('show')) {\n";
+        $html .= "\t\t\t\t\t\t\t\topenDropdown.classList.remove('show');\n";
+        $html .= "\t\t\t\t\t\t\t}\n";
+        $html .= "\t\t\t\t\t\t}\n";
+        $html .= "\t\t\t\t\t}\n";
+        $html .= "\t\t\t\t}\n";
+        $html .= "\t\t\t\t</script>\n";
 
-    if (isset($_SESSION['type']) && $_SESSION['type'] == 2) {
-        $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
+        $html .= "\t\t\t\t<button onclick=\"pelem()\" class=\"actionmenu\">☰</button>\n";
+        $html .= "\t\t\t\t<div id=\"dropdown\" class=\"dropdown-content\">\n";
+
+        if (isset($_SESSION['type'])) $html .= "\t\t\t\t<a href=\"files.php\">Your files</a>\n";
+        if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<a href=\"all.php\">Find</a>\n";
+
+        foreach (glob('*.php') as $file) {
+            if (!file_exists("$file".".name")) {
+                continue;
+            }
+
+            $name = file_get_contents("$file".".name");
+            $name = rtrim($name, "\r\n");
+            $html .= "\t\t\t\t<a href=\"$file\">$name</a>\n";
+        }
+
+        $html .= "\t\t\t\t<br><br>\n";
+
+        if (!isset($_SESSION['type'])) {
+            if ($publicAccountCreation) {
+                $html .= "\t\t\t\t<a id='register' href=\"register.php\">Register</a>\n";
+            }
+
+            $html .= "\t\t\t\t<a id='login' href=\"login.php\">Log in</a>\n";
+        } else {
+            $Username = $_SESSION['username'];
+            $html .= "\t\t\t\t<a id='username' href=\"account.php\">$Username</a>\n";
+            $html .= "\t\t\t\t<a id='logout' href=\"login.php?logout=true\">Log out</a>\n";
+        }
+
+        if (isset($_SESSION['type']) && $_SESSION['type'] == 2) {
+            $html .= "\t\t\t\t<a id='administration' href=\"admin.php\">Administration</a>\n";
+        }
+
+        $html .= "\t\t\t\t</div>\n";
     }
 
     $html .= "\t\t\t</span>\n";
@@ -112,7 +171,7 @@ function printFileUploadForm($html, $Error) {
     if (isset($_SESSION['type']) || ($publicUploading || $publicUploading == "true")) {
         $html .= "\t\t\t<form action=\"upload.php\" method=\"post\" enctype=\"multipart/form-data\">\n";
         $html .= "\t\t\t\t<input type=\"file\" name=\"file\" id=\"file\">\n";
-        $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" name=\"web\">\n";
+        $html .= "\t\t\t\t<input type=\"submit\" value=\"Upload selected file\" id='web' name=\"web\">\n";
         $html .= "\t\t\t</form>\n";
         $html .= "\t\t\t<p id='maxFileSize'>Max file size: $maxFileSize MB</p>\n";
 
