@@ -51,10 +51,15 @@ while ($line = $DatabaseQuery->fetchArray()) {
         $Authorized = 1;
 
         break;
-    } else if ($line['username'] == $Username && $Username != "" && $line['password'] != "" && $Password == $line['password']) { // We're logged into an admin account
+    } else if ($line['username'] == $Username && $Username != "" && $line['password'] != "" && $Password == $line['password'] && $line['usertype'] == 2) { // We're logged into an admin account
         $UserDatabaseQuery = $Database->query('SELECT * FROM users');
         $Primary = $line['primaryadmin'];
         $IsCurrentUser = false;
+
+        // no need to display admin tools for our own account
+        if ($ID == $line['id']) {
+            $IsCurrentUser = true;
+        }
 
         while ($uline = $UserDatabaseQuery->fetchArray()) {
             if ($ID == $uline['id'] && ($Primary && $uline['usertype'] == 2 || $uline['usertype'] != 2)) {

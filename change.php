@@ -84,6 +84,10 @@ while ($line = $DatabaseQuery->fetchArray()) {
         $UserDatabaseQuery = $Database->query('SELECT * FROM users');
         $Primary = $line['primaryadmin'];
 
+        if ($ID == $line['id']) {
+            $IsCurrentUser = true;
+        }
+
         while ($uline = $UserDatabaseQuery->fetchArray()) {
             if ($ID == $uline['id'] && ($Primary && $uline['usertype'] == 2 || $uline['usertype'] != 2)) {
                 $CurUsername = $uline['username'];
