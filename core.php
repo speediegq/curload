@@ -53,7 +53,7 @@ function printHeader($html) {
     if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
     if (isset($_SESSION['type'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
-    if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">All uploads</a></small>\n";
+    if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">Find</a></small>\n";
 
     foreach (glob('*.php') as $file) {
         if (!file_exists("$file".".name")) {
