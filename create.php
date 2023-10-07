@@ -11,7 +11,7 @@ include "config.php";
 $Username = "";
 $Password = "";
 $lastUsed = "";
-$Issued = "";
+$Created = "";
 $ip = "";
 $userAgent = "";
 
@@ -153,7 +153,7 @@ while ($line = $DatabaseQuery->fetchArray()) {
 }
 
 if ($storeAgent || $storeAgent == "true") $userAgent = getUserAgent();
-if ($storeIssued || $storeIssued == "true") $Issued = date($dateFormat);
+if ($storeCreated || $storeCreated == "true") $Created = date($dateFormat);
 if ($storeLastUsage || $storeLastUsage == "true") $lastUsed = date($dateFormat);
 if ($storeIP || $storeIP == "true") $ip = getIPAddress();
 
@@ -163,7 +163,7 @@ if ($Type == "Admin") {
     $typeNum = 1;
 }
 
-$Database->exec("INSERT INTO users(username, password, usertype, primaryadmin, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Username', '$Password', '$typeNum', '$firstUser', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+$Database->exec("INSERT INTO users(username, password, usertype, primaryadmin, numberofuploads, uploadsleft, lastused, created, ip, useragent) VALUES('$Username', '$Password', '$typeNum', '$firstUser', '$numberOfUploads', '$uploadsLeft', '$lastUsed', '$Created', '$ip', '$userAgent')");
 
 if ($Redirect == "admin") {
     header("Location: admin.php?action=users");

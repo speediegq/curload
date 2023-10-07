@@ -171,7 +171,7 @@ if ($Action == "files") {
     $html .= "\t\t\t\t\t\t<th class=\"adminNumberOfUploads\">Uploads</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminUploadsLeft\">Uploads left</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminLastUsed\">Last used</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"adminIssued\">Issued</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"adminCreated\">Created</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminIP\">IP</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminUserAgent\">User agent</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"adminuserType\">User type</th>\n";
@@ -192,7 +192,7 @@ if ($Action == "files") {
         $NumberOfUploads = $line['numberofuploads'];
         $UploadsLeft = "";
         $LastUsed = $line['lastused'];
-        $Issued = $line['issued'];
+        $Created = $line['created'];
         $IP = $line['ip'];
         $UserAgent = $line['useragent'];
 
@@ -217,7 +217,7 @@ if ($Action == "files") {
         $html .= "\t\t\t\t\t\t<td class=\"adminNumberOfUploads\"><a href=\"admin.php?action=files&id=$ID\">$NumberOfUploads</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadsLeft\">$UploadsLeft</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminLastUsed\">$LastUsed</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminIssued\">$Issued</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminCreated\">$Created</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminIP\">$IP</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUserAgent\">$UserAgent</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminuserType\">$userType</td>\n";

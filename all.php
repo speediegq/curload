@@ -78,14 +78,14 @@ if ($Action == "files" && ($publicFileList || $publicFileList == "true")) {
     $html .= "\t\t\t\t\t<tr class=\"UserView\">\n";
     $html .= "\t\t\t\t\t\t<th class=\"userName\">Username</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"userNumberOfUploads\">Uploads</th>\n";
-    $html .= "\t\t\t\t\t\t<th class=\"userIssued\">Issued</th>\n";
+    $html .= "\t\t\t\t\t\t<th class=\"userCreated\">Created</th>\n";
     $html .= "\t\t\t\t\t\t<th class=\"userType\">User type</th>\n";
     $html .= "\t\t\t\t\t</tr>\n";
 
     while ($line = $DatabaseQuery->fetchArray()) {
         $Username = $line['username'];
         $numberofuploads = $line['numberofuploads'];
-        $Issued = $line['issued'];
+        $Created = $line['created'];
         $usertypeID = $line['usertype'];
         $userType = "";
 
@@ -100,7 +100,7 @@ if ($Action == "files" && ($publicFileList || $publicFileList == "true")) {
         $html .= "\t\t\t\t\t<tr class=\"View\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"userName\">$Username</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"userNumberOfUploads\">$numberofuploads</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"userIssued\">$Issued</td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"userCreated\">$Created</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"userType\">$userType</td>\n";
 
         $html .= "\t\t\t\t\t</tr>\n";

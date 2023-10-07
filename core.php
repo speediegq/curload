@@ -16,11 +16,11 @@ function createTables($sqlDB) {
      * numberofuploads (INT)
      * uploadsleft (INT)
      * lastused (TEXT)
-     * issued (TEXT)
+     * created (TEXT)
      * ip (TEXT)
      * useragent (TEXT)
      */
-    $Database->exec("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT, password TEXT, usertype INT, primaryadmin INT, numberofuploads INT, uploadsleft INT, lastused TEXT, issued TEXT, ip TEXT, useragent TEXT)");
+    $Database->exec("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT, password TEXT, usertype INT, primaryadmin INT, numberofuploads INT, uploadsleft INT, lastused TEXT, created TEXT, ip TEXT, useragent TEXT)");
 
     /* uploads table
      * id (INTEGER PRIMARY KEY)

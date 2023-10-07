@@ -32,11 +32,11 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
     }
 
     if ($storeAgent || $storeAgent == "true") $userAgent = getUserAgent();
-    if ($storeIssued || $storeIssued == "true") $Issued = date($dateFormat);
+    if ($storeCreated || $storeCreated == "true") $Created = date($dateFormat);
     if ($storeLastUsage || $storeLastUsage == "true") $lastUsed = date($dateFormat);
     if ($storeIP || $storeIP == "true") $ip = getIPAddress();
 
-    $Database->exec("INSERT INTO users(username, password, usertype, primaryadmin, numberofuploads, uploadsleft, lastused, issued, ip, useragent) VALUES('$Username', '$Password', '1', '0', '0', '-1', '$lastUsed', '$Issued', '$ip', '$userAgent')");
+    $Database->exec("INSERT INTO users(username, password, usertype, primaryadmin, numberofuploads, uploadsleft, lastused, created, ip, useragent) VALUES('$Username', '$Password', '1', '0', '0', '-1', '$lastUsed', '$Created', '$ip', '$userAgent')");
 
     header("Location: login.php");
     die();
