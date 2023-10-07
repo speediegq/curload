@@ -105,6 +105,35 @@ if ($allowUsernameChange || !$IsCurrentUser) {
     $html .= "\t\t\t\t\t</form>\n";
 }
 
+if (!$IsCurrentUser) {
+    $html .= "\t\t\t\t<h2>Administrator: Change type</h2>\n";
+    $html .= "\t\t\t\t\t<p>If you need to change the type, you can do so here:</p>\n";
+
+    $html .= "\t\t\t\t\t<form action=\"change.php\" method=\"post\" class=\"changeType\">\n";
+    $html .= "\t\t\t\t\t\t<label for=\"type\">New type</label>\n";
+    $html .= "\t\t\t\t\t\t<select name=\"type\" required>\n";
+    if ($Primary == 1) $html .= "\t\t\t\t\t\t\t<option value=\"2\">Administrator</option>\n";
+    $html .= "\t\t\t\t\t\t\t<option value=\"1\" selected=\"selected\">User</option>\n";
+    $html .= "\t\t\t\t\t\t</select>\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"type\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change type\" name=\"change\">\n";
+    $html .= "\t\t\t\t\t</form>\n";
+
+    $html .= "\t\t\t\t<h2>Administrator: Change uploads left</h2>\n";
+    $html .= "\t\t\t\t\t<p>If you need to change the number of uploads left, you can do so here:</p>\n";
+
+    $html .= "\t\t\t\t\t<form action=\"change.php\" method=\"post\" class=\"changeUploads\">\n";
+    $html .= "\t\t\t\t\t\t<label for=\"uploads\">New uploads</label>\n";
+    $html .= "\t\t\t\t\t\t<input type=\"number\" name=\"uploads\" value=\"1\">\n";
+    $html .= "\t\t\t\t\t\t<label for=\"user\">No limit</label>\n";
+    $html .= "\t\t\t\t\t\t<input type=\"checkbox\" name=\"user\" value=\"true\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"uploads\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change uploads\" name=\"change\">\n";
+    $html .= "\t\t\t\t\t</form>\n";
+}
+
 $html = printFooter($html);
 print "$html";
 

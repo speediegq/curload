@@ -11,9 +11,12 @@ $Username = "";
 $Password = "";
 $CurUsername = "";
 $CurPassword = "";
+$RequestedType = 0;
 $Action = "";
 $ID = 0;
 $Primary = 0;
+$UserType = 0;
+$UploadsLeft = 0;
 $IsCurrentUser = false;
 
 // make sure a username and password is specified for authentication
@@ -52,6 +55,8 @@ while ($line = $DatabaseQuery->fetchArray()) {
         $IsCurrentUser = true;
         $CurUsername = $line['username'];
         $CurPassword = $line['password'];
+        $UserType = $line['usertype'];
+        $UploadsLeft = $line['uploadsleft'];
 
         break;
     } else if ($line['username'] == $Username && $Username != "" && $line['password'] != "" && $Password == $line['password']) { // We're logged into an admin account
@@ -62,6 +67,8 @@ while ($line = $DatabaseQuery->fetchArray()) {
             if ($ID == $uline['id'] && ($Primary && $uline['usertype'] == 2 || $uline['usertype'] != 2)) {
                 $CurUsername = $uline['username'];
                 $CurPassword = $uline['password'];
+                $UserType = $uline['usertype'];
+                $UploadsLeft = $uline['uploadsleft'];
                 $Authorized = 1;
                 break;
             }
@@ -125,6 +132,29 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
     // change it
     $Database->exec("UPDATE users SET username='$NewUsername' WHERE id='$ID'");
     $Database->exec("UPDATE uploads SET username='$NewUsername' WHERE username='$CurUsername'");
+} else if ($Action == "type") {
+    if (isset($_REQUEST['type']) && !$IsCurrentUser) {
+        $UserType = htmlspecialchars($_REQUEST['type']);
+    } else {
+        header("Location: /");
+        die();
+    }
+
+    if (($Primary == 1 && $UserType == 2) || $UserType != 2) {
+        $Database->exec("UPDATE users SET usertype='$UserType' WHERE id='$ID'");
+        $Database->exec("UPDATE uploads SET usertype='$UserType' WHERE username='$CurUsername'");
+    }
+} else if ($Action == "uploads") {
+    if (isset($_REQUEST['uploads']) && !$IsCurrentUser) {
+        $UploadsLeft = htmlspecialchars($_REQUEST['uploads']);
+    } else {
+        header("Location: /");
+        die();
+    }
+
+    if ($UploadsLeft < 1 || isset($_REQUEST['user'])) $UploadsLeft = -1;
+
+    $Database->exec("UPDATE users SET uploadsleft='$UploadsLeft' WHERE id='$ID'");
 } else {
     header("Location: /");
     die();
