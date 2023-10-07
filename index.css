@@ -21,7 +21,7 @@
     float: right;
 }
 
-#login, #logout {
+#login, #logout, #username {
     padding-left: 5px;
     float: right;
 }

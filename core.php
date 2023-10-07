@@ -68,6 +68,8 @@ function printHeader($html) {
     if (!isset($_SESSION['type'])) {
         $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
     } else {
+        $Username = $_SESSION['username'];
+        $html .= "\t\t\t\t<small id='username'><a id='username' href=\"account.php\">$Username</a></small>\n";
         $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
     }
 
