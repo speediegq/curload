@@ -16,6 +16,11 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
     $Username = $_REQUEST['username'];
     $Password = generatePassword($_REQUEST['password']);
 
+    if ($_REQUEST['password'] != $_REQUEST['cpassword']) {
+        header("Location: register.php?e=mismatch");
+        die();
+    }
+
     // check if a user by the same name already exists
     $Database = createTables($sqlDB);
     $DatabaseQuery = $Database->query('SELECT * FROM users');
@@ -45,6 +50,7 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
     $html .= "\t\t\t\t<form action=\"register.php\">\n";
     $html .= "\t\t\t\t\t<input type=\"text\" name=\"username\" placeholder=\"Username\">\n";
     $html .= "\t\t\t\t\t<input type=\"password\" name=\"password\" placeholder=\"Password\">\n";
+    $html .= "\t\t\t\t\t<input type=\"password\" name=\"cpassword\" placeholder=\"Confirm password\">\n";
     if (isset($Redirect)) $html .= "\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Create account\">\n";
     $html .= "\t\t\t\t</form>\n";
@@ -54,6 +60,11 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
         session_destroy();
 
         $html .= "\t\t\t\t<p class=\"error\">An account by this name already exists.</p>\n";
+    } else if (isset($_REQUEST['e']) && $_REQUEST['e'] == "mismatch") {
+        session_unset();
+        session_destroy();
+
+        $html .= "\t\t\t\t<p class=\"error\">The two passwords do not match.</p>\n";
     }
 
     $html = printFooter($html);
