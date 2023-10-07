@@ -48,15 +48,16 @@ function printHeader($html) {
     if (file_exists($javaScript)) $html .= "\t\t<script src=\"$javaScript\"></script>\n";
 
     $html .= "\t\t<title>$instanceName</title>\n";
-    $html .= "\t\t<div class=\"bar\">\n";
-    $html .= "\t\t\t<span id='titleSpan' class='title'>\n";
-    if (file_exists($Logo)) $html .= "\t\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
-    $html .= "\t\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
+    $html .= "\t\t<div class=\"barTitle\">\n";
+    if (file_exists($Logo)) $html .= "\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
+    $html .= "\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
+    $html .= "\t\t</div>\n";
+    $html .= "\t\t<div class=\"barMenu\">\n";
 
     // javascript free version
     if (!$allowJavascript) {
-        if (isset($_SESSION['type'])) $html .= "\t\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
-        if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">Find</a></small>\n";
+        if (isset($_SESSION['type'])) $html .= "\t\t\t<small id='files'><a id='files' href=\"files.php\">Your files</a></small>\n";
+        if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t<small id='filelist'><a id='filelist' href=\"all.php\">Find</a></small>\n";
 
         foreach (glob('*.php') as $file) {
             if (!file_exists("$file".".name")) {
@@ -65,46 +66,46 @@ function printHeader($html) {
 
             $name = file_get_contents("$file".".name");
             $name = rtrim($name, "\r\n");
-            $html .= "\t\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
+            $html .= "\t\t\t<small id='$name'><a id='$name' href=\"$file\">$name</a></small>\n";
         }
 
         if (!isset($_SESSION['type'])) {
             if ($publicAccountCreation) {
-                $html .= "\t\t\t\t<small id='register'><a id='register' href=\"register.php\">Register</a></small>\n";
+                $html .= "\t\t\t<small id='register'><a id='register' href=\"register.php\">Register</a></small>\n";
             }
 
-            $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
+            $html .= "\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
         } else {
             $Username = $_SESSION['username'];
-            $html .= "\t\t\t\t<small id='username'><a id='username' href=\"account.php\">$Username</a></small>\n";
-            $html .= "\t\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
+            $html .= "\t\t\t<small id='username'><a id='username' href=\"account.php\">$Username</a></small>\n";
+            $html .= "\t\t\t<small id='logout'><a id='logout' href=\"login.php?logout=true\">Log out</a></small>\n";
         }
 
         if (isset($_SESSION['type']) && $_SESSION['type'] == 2) {
-            $html .= "\t\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
+            $html .= "\t\t\t<small id='administration'><a id='administration' href=\"admin.php\">Administration</a></small>\n";
         }
     } else { // yay (not) we can use JS, basically stolen from w3schools because i can't JS
-        $html .= "\t\t\t\t<script>\n";
-        $html .= "\t\t\t\t\tfunction pelem() {\n";
-        $html .= "\t\t\t\t\t\tdocument.getElementById(\"dropdown\").classList.toggle(\"show\");\n";
-        $html .= "\t\t\t\t\t}\n";
-        $html .= "\t\t\t\t\t\n";
-        $html .= "\t\t\t\t\twindow.onclick = function(event) {\n";
-        $html .= "\t\t\t\t\tif (!event.target.matches('.actionmenu')) {\n";
-        $html .= "\t\t\t\t\t\tvar dropdowns = document.getElementsByClassName(\"dropdown-content\");\n";
-        $html .= "\t\t\t\t\t\tvar i;\n";
-        $html .= "\t\t\t\t\t\tfor (i = 0; i < dropdowns.length; i++) {\n";
-        $html .= "\t\t\t\t\t\t\tvar openDropdown = dropdowns[i];\n";
-        $html .= "\t\t\t\t\t\t\tif (openDropdown.classList.contains('show')) {\n";
-        $html .= "\t\t\t\t\t\t\t\topenDropdown.classList.remove('show');\n";
-        $html .= "\t\t\t\t\t\t\t}\n";
+        $html .= "\t\t\t<script>\n";
+        $html .= "\t\t\t\tfunction pelem() {\n";
+        $html .= "\t\t\t\t\tdocument.getElementById(\"dropdown\").classList.toggle(\"show\");\n";
+        $html .= "\t\t\t\t}\n";
+        $html .= "\t\t\t\t\n";
+        $html .= "\t\t\t\twindow.onclick = function(event) {\n";
+        $html .= "\t\t\t\tif (!event.target.matches('.actionmenu')) {\n";
+        $html .= "\t\t\t\t\tvar dropdowns = document.getElementsByClassName(\"dropdown-content\");\n";
+        $html .= "\t\t\t\t\tvar i;\n";
+        $html .= "\t\t\t\t\tfor (i = 0; i < dropdowns.length; i++) {\n";
+        $html .= "\t\t\t\t\t\tvar openDropdown = dropdowns[i];\n";
+        $html .= "\t\t\t\t\t\tif (openDropdown.classList.contains('show')) {\n";
+        $html .= "\t\t\t\t\t\t\topenDropdown.classList.remove('show');\n";
         $html .= "\t\t\t\t\t\t}\n";
         $html .= "\t\t\t\t\t}\n";
         $html .= "\t\t\t\t}\n";
-        $html .= "\t\t\t\t</script>\n";
+        $html .= "\t\t\t}\n";
+        $html .= "\t\t\t</script>\n";
 
-        $html .= "\t\t\t\t<button onclick=\"pelem()\" class=\"actionmenu\">☰</button>\n";
-        $html .= "\t\t\t\t<div id=\"dropdown\" class=\"dropdown-content\">\n";
+        $html .= "\t\t\t<button onclick=\"pelem()\" class=\"actionmenu\">☰</button>\n";
+        $html .= "\t\t\t<div id=\"dropdown\" class=\"dropdown-content\">\n";
 
         if (isset($_SESSION['type'])) $html .= "\t\t\t\t<a href=\"files.php\">Your files</a>\n";
         if ($publicFileList || $publicFileList == "true") $html .= "\t\t\t\t<a href=\"all.php\">Find</a>\n";
@@ -137,10 +138,9 @@ function printHeader($html) {
             $html .= "\t\t\t\t<a id='administration' href=\"admin.php\">Administration</a>\n";
         }
 
-        $html .= "\t\t\t\t</div>\n";
+        $html .= "\t\t\t</div>\n";
     }
 
-    $html .= "\t\t\t</span>\n";
     $html .= "\t\t</div>\n";
     $html .= "\t</head>\n";
     $html .= "\t<body>\n";
@@ -155,9 +155,9 @@ function printFooter($html) {
     $html .= "\t\t</div>\n";
     $html .= "\t</body>\n";
     $html .= "\t<footer>\n";
-    $html .= "\t\t<span id='footerSpan' class='footer'>\n";
-    $html .= "\t\t\t<p class='footerText' id='footerText'>$footerText</p>\n";
-    $html .= "\t\t</span>\n";
+    $html .= "\t\t<div class='footer'>\n";
+    $html .= "\t\t\t<small class='footerText' id='footerText'>$footerText</p>\n";
+    $html .= "\t\t</div>\n";
     $html .= "\t</footer>\n";
     $html .= "</html>\n";
 
