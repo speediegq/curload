@@ -18,14 +18,27 @@ $Primary = 0;
 $UserType = 0;
 $UploadsLeft = 0;
 $IsCurrentUser = false;
+$Redirect = "";
+
+if (isset($_REQUEST['redir'])) {
+    $Redirect = $_REQUEST['redir'];
+}
 
 // make sure a username and password is specified for authentication
 if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
     $Username = $_SESSION['username'];
     $Password = $_SESSION['password'];
 } else {
-    header("Location: /");
-    die();
+    if ($Redirect == "account") {
+        header("Location: account.php?id=$ID&e=auth");
+        die();
+    } else if ($Redirect == "admin") {
+        header("Location: admin.php?action=users");
+        die();
+    } else {
+        header("Location: /");
+        die();
+    }
 }
 
 if (isset($_REQUEST['id'])) {
@@ -38,8 +51,16 @@ if (isset($_REQUEST['id'])) {
 if (isset($_REQUEST['action'])) {
     $Action = $_REQUEST['action'];
 } else {
-    header("Location: /");
-    die();
+    if ($Redirect == "account") {
+        header("Location: account.php?id=$ID&e=action");
+        die();
+    } else if ($Redirect == "admin") {
+        header("Location: admin.php?action=users");
+        die();
+    } else {
+        header("Location: /");
+        die();
+    }
 }
 
 $Authorized = 0;
@@ -77,54 +98,119 @@ while ($line = $DatabaseQuery->fetchArray()) {
 }
 
 if ($Authorized == 0) {
-    header("Location: /");
-    die();
+    if ($Redirect == "account") {
+        header("Location: account.php?id=$ID&e=auth");
+        die();
+    } else if ($Redirect == "admin") {
+        header("Location: admin.php?action=users");
+        die();
+    } else {
+        header("Location: /");
+        die();
+    }
 }
 
 // perform the action
 if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
     if (!isset($_REQUEST['newpass']) || !isset($_REQUEST['newpassc'])) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=pnone");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     if ($_REQUEST['newpass'] != $_REQUEST['newpassc']) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=pmismatch");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     $NewPassword = htmlspecialchars(generatePassword($_REQUEST['newpass']));
 
     if (!password_verify($_REQUEST['curpass'], $CurPassword) && $IsCurrentUser) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=pauth");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     $Database->exec("UPDATE users SET password='$NewPassword' WHERE id='$ID'");
 } else if ($Action == "username" && ($allowUsernameChange || !$IsCurrentUser)) {
     if (!isset($_REQUEST['newusername'])) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=unone");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     if (!isset($_REQUEST['curusername']) && $IsCurrentUser) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=ucurrent");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     $NewUsername = htmlspecialchars($_REQUEST['newusername']);
 
     if ($CurUsername != $_REQUEST['curusername'] && $IsCurrentUser) {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=umismatch");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     // make sure no duplicates can exist
     $UserDatabaseQuery = $Database->query('SELECT * FROM users');
     while ($uline = $UserDatabaseQuery->fetchArray()) {
         if ($uline['username'] == $NewUsername) {
-            header("Location: /");
-            die();
+            if ($Redirect == "account") {
+                header("Location: account.php?id=$ID&e=uexists");
+                die();
+            } else if ($Redirect == "admin") {
+                header("Location: admin.php?action=users");
+                die();
+            } else {
+                header("Location: /");
+                die();
+            }
+
             break;
         }
     }
@@ -148,8 +234,16 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
     if (isset($_REQUEST['uploads']) && !$IsCurrentUser) {
         $UploadsLeft = htmlspecialchars($_REQUEST['uploads']);
     } else {
-        header("Location: /");
-        die();
+        if ($Redirect == "account") {
+            header("Location: account.php?id=$ID&e=tnone");
+            die();
+        } else if ($Redirect == "admin") {
+            header("Location: admin.php?action=users");
+            die();
+        } else {
+            header("Location: /");
+            die();
+        }
     }
 
     if ($UploadsLeft < 1 || isset($_REQUEST['user'])) $UploadsLeft = -1;
@@ -163,5 +257,16 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
 if ($IsCurrentUser) {
     header('Location: login.php?logout=true');
     die();
+} else {
+    if ($Redirect == "account") {
+        header("Location: account.php?id=$ID");
+        die();
+    } else if ($Redirect == "admin") {
+        header("Location: admin.php?action=users");
+        die();
+    } else {
+        header("Location: /");
+        die();
+    }
 }
 ?>

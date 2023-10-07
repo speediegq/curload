@@ -50,6 +50,10 @@
     color: #ff0000;
 }
 
+.userError {
+    color: #ff0000;
+}
+
 .content {
     font-size: 12pt;
     font-family: Monospace;

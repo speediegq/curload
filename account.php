@@ -15,6 +15,8 @@ $Password = "";
 $ID = -1;
 $Primary = 0;
 $IsCurrentUser = false;
+$Error = "";
+$Redirect = "account";
 
 // make sure a username and password is specified for authentication
 if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
@@ -29,6 +31,10 @@ if (isset($_REQUEST['id'])) {
     $ID = $_REQUEST['id'];
 } else {
     $ID = -1; // use the username and password to determine
+}
+
+if (isset($_REQUEST['redir'])) {
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
 $Authorized = 0;
@@ -64,6 +70,10 @@ if ($Authorized == 0) {
     die();
 }
 
+if (isset($_REQUEST['e'])) {
+    $Error = $_REQUEST['e'];
+}
+
 $html .= "\t\t\t<h1>Account options</h1>\n";
 $html .= "\t\t\t\t<p>This is where you can change account options.</p>\n";
 
@@ -83,8 +93,18 @@ if ($allowPasswordChange || $IsCurrentUser) {
     $html .= "\t\t\t\t\t\t<input type=\"password\" name=\"newpassc\" placeholder=\"Confirm\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"pass\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change password\" name=\"change\">\n";
     $html .= "\t\t\t\t\t</form>\n";
+
+    // handle errors
+    if ($Error == "pnone") {
+        $html .= "\t\t\t\t<p class=\"userError\">No password specified.</p>\n";
+    } else if ($Error == "pmismatch") {
+        $html .= "\t\t\t\t<p class=\"userError\">Passwords do not match.</p>\n";
+    } else if ($Error == "pauth") {
+        $html .= "\t\t\t\t<p class=\"userError\">Incorrect password.</p>\n";
+    }
 }
 
 if ($allowUsernameChange || !$IsCurrentUser) {
@@ -101,8 +121,20 @@ if ($allowUsernameChange || !$IsCurrentUser) {
     $html .= "\t\t\t\t\t\t<input type=\"text\" name=\"newusername\" placeholder=\"New username\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"username\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change username\" name=\"change\">\n";
     $html .= "\t\t\t\t\t</form>\n";
+
+    // handle errors
+    if ($Error == "unone") {
+        $html .= "\t\t\t\t<p class=\"userError\">No username specified.</p>\n";
+    } else if ($Error == "ucurrent") {
+        $html .= "\t\t\t\t<p class=\"userError\">You must specify your current username.</p>\n";
+    } else if ($Error == "umismatch") {
+        $html .= "\t\t\t\t<p class=\"userError\">Usernames do not match.</p>\n";
+    } else if ($Error == "uexists") {
+        $html .= "\t\t\t\t<p class=\"userError\">A user by that name already exists. Sorry.</p>\n";
+    }
 }
 
 if (!$IsCurrentUser) {
@@ -117,6 +149,7 @@ if (!$IsCurrentUser) {
     $html .= "\t\t\t\t\t\t</select>\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"type\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change type\" name=\"change\">\n";
     $html .= "\t\t\t\t\t</form>\n";
 
@@ -129,9 +162,22 @@ if (!$IsCurrentUser) {
     $html .= "\t\t\t\t\t\t<label for=\"user\">No limit</label>\n";
     $html .= "\t\t\t\t\t\t<input type=\"checkbox\" name=\"user\" value=\"true\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"action\" value=\"uploads\">\n";
+    $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"redir\" value=\"$Redirect\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"hidden\" name=\"id\"\" value=\"$ID\">\n";
     $html .= "\t\t\t\t\t\t<input type=\"submit\" value=\"Change uploads\" name=\"change\">\n";
     $html .= "\t\t\t\t\t</form>\n";
+
+    // handle errors
+    if ($Error == "tnone") {
+        $html .= "\t\t\t\t<p class=\"userError\">No uploads specified.</p>\n";
+    }
+}
+
+// handle errors
+if ($Error == "auth") {
+    $html .= "\t\t\t\t<p class=\"userError\">Invalid username or password.</p>\n";
+} else if ($Error == "action") {
+    $html .= "\t\t\t\t<p class=\"userError\">Invalid action.</p>\n";
 }
 
 $html = printFooter($html);

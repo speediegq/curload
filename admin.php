@@ -224,7 +224,7 @@ if ($Action == "files") {
 
         if ($Primary == 1 && $line['primaryadmin'] != 1) { // primary admins cannot be removed
             $html .= "\t\t\t\t\t\t<td class=\"adminRemove\"><a href=\"/remove-user.php?redir=admin&id=$ID&type=2\">Remove</a></td>\n";
-            $html .= "\t\t\t\t\t\t<td class=\"adminEdit\"><a href=\"/account.php?redir=admin&id=$ID\">Edit</a></td>\n";
+            $html .= "\t\t\t\t\t\t<td class=\"adminEdit\"><a href=\"/account.php?id=$ID\">Edit</a></td>\n";
         }
 
         $html .= "\t\t\t\t\t</tr>\n";
