@@ -17,6 +17,8 @@ $storeIssued             = true;
 $storeLastUsage          = true;
 $storeUploads            = true;
 $publicUploading         = false;
+$publicFileList          = false;
+$publicAccountCreation   = false;
 $allowPasswordChange     = true;
 $renameDuplicates        = true;
 $replaceOriginal         = false;
@@ -27,7 +29,6 @@ $instanceDescription     = "curload is a simple file uploading site allowing use
 $footerText              = "Licensed under the GNU Affero General Public License version 3.0.";
 $enableUploadRemoval     = true;
 $enableUserUploadRemoval = false;
-$publicFileList          = false;
 
 $configFile = "";
 
@@ -69,5 +70,6 @@ $replaceOriginal = $configEntries['replace_original'];
 $enableUploadRemoval = $configEntries['enable_upload_removal'];
 $enableUserUploadRemoval = $configEntries['enable_user_upload_removal'];
 $publicFileList = $configEntries['public_file_list'];
+$publicAccountCreation = $configEntries['public_account_create'];
 $javaScript = $configEntries['javascript'];
 ?>

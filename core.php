@@ -66,6 +66,10 @@ function printHeader($html) {
     }
 
     if (!isset($_SESSION['type'])) {
+        if ($publicAccountCreation) {
+            $html .= "\t\t\t\t<small id='register'><a id='register' href=\"register.php\">Register</a></small>\n";
+        }
+
         $html .= "\t\t\t\t<small id='login'><a id='login' href=\"login.php\">Log in</a></small>\n";
     } else {
         $Username = $_SESSION['username'];
