@@ -15,9 +15,22 @@
     padding-right: 10px;
 }
 
+input, select {
+    font-size: 12pt;
+    font-family: Monospace;
+    font-weight: normal;
+
+    padding: 7px;
+    border-color: #363636;
+    border-width: 0px;
+    background-color: #363636;
+    color: #f0eee4;
+}
+
 input[type=file] {
     background-color: #262626;
     color: #646464;
+    padding: 5px;
 }
 
 input[type=file]::file-selector-button {
@@ -34,7 +47,7 @@ input[type=file]::file-selector-button {
 }
 
 #web {
-    padding: 7px;
+    padding: 10px;
 }
 
 .actionmenu {
@@ -169,18 +182,6 @@ a {
 a:hover {
 	color: #ccccff;
     text-decoration: underline;
-}
-
-input, select {
-    font-size: 12pt;
-    font-family: Monospace;
-    font-weight: normal;
-
-    padding: 2px;
-    border-color: #363636;
-    border-width: 0px;
-    background-color: #363636;
-    color: #f0eee4;
 }
 
 body {
