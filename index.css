@@ -52,7 +52,7 @@ input[type=file]::file-selector-button {
 
 .actionmenu {
   background-color: #3e3e3e;
-  padding: 5px;
+  padding: 7px;
   color: white;
   border: none;
   cursor: pointer;
@@ -188,6 +188,7 @@ body {
     margin: 0px;
     padding: 0px;
     background-color: #212121;
+    overflow-x: hidden;
 }
 
 footer {
