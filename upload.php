@@ -102,7 +102,7 @@ if (!$publicUploading || $publicUploading == "false") {
     }
 }
 
-if ($_FILES['file']['size'] > $uploadLimit && $uploadLimit > 0) {
+if ($_FILES['file']['size'] > $uploadLimit && $uploadLimit > 0 && $userType != 2) {
     if ($WebInterface == 0) {
         print "File is too big. Max file size is $maxFileSize" . "MB";
         die();
