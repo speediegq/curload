@@ -179,6 +179,8 @@ function printFileUploadForm($html, $Error) {
         if ($Error == "file") {
             $html .= "\t\t\t<p class=\"error\">No file specified.</p>\n";
         } else if ($Error == "size") {
+            $html .= "\t\t\t<p class=\"error\">That file is not allowed.</p>\n";
+        } else if ($Error == "type") {
             $html .= "\t\t\t<p class=\"error\">File is too big.</p>\n";
         } else if ($Error == "user") {
             $html .= "\t\t\t<p class=\"error\">File upload failed: No uploads left.</p>\n";

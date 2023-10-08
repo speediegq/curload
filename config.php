@@ -29,6 +29,7 @@ $dateFormat              = "Y/m/d";
 $instanceName            = "curload";
 $instanceDescription     = "curload is a simple file uploading site allowing users to upload files.";
 $footerText              = "Licensed under the GNU Affero General Public License version 3.0.";
+$blacklistedFileTypes    = ""; // "exe|msi|AppImage|...."
 $enableUploadRemoval     = true;
 $enableUserUploadRemoval = false;
 
@@ -75,5 +76,6 @@ $enableUserUploadRemoval = $configEntries['enable_user_upload_removal'];
 $publicFileList = $configEntries['public_file_list'];
 $publicUserList = $configEntries['public_user_list'];
 $publicAccountCreation = $configEntries['public_account_create'];
+$blacklistedFileTypes = $configEntries['blacklisted_file_types'];
 $javaScript = $configEntries['javascript'];
 ?>

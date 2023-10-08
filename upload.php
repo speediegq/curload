@@ -118,11 +118,21 @@ if (!is_dir($uploadDir)) {
 }
 
 $destinationFile = $uploadDir . basename($_FILES['file']['name']);
+$fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
+
+if (preg_match($blacklistedFileTypes, $fileExtension)) {
+    if ($WebInterface == 0) {
+        print "File type not allowed.";
+        die();
+    } else {
+        header("Location: /?e=type");
+        die();
+    }
+}
 
 // rename file if necessary
 if (!$replaceOriginal || $replaceOriginal == "false") {
     if (file_exists($destinationFile)) { // rename file to distinguish it from existing file
-        $fileExtension = strtolower(pathinfo(basename($_FILES['file']['name']),PATHINFO_EXTENSION));
         if (isset($fileExtension)) {
             $extension = "." . $fileExtension;
         }
@@ -149,15 +159,17 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $destinationFile)) {
     $lastUsed = date($dateFormat);
     $DatabaseQuery = $Database->query('SELECT * FROM uploads');
     $Database->exec("INSERT INTO uploads(file, uploaddate, username, usertype) VALUES('$uploadedFile', '$lastUsed', '$Username', '$userType')");
+    $ID = $Database->lastInsertRowID();
 
     if ($WebInterface == 0) {
         print "$uploadedFile";
     } else {
-        header("Location: $uploadedFile");
+        header("Location: file.php?f=$ID");
+        die();
     }
 
     if (isset($_REQUEST['web'])) { // redirect back to index
-        header("Redirect: $uploadedFile");
+        header("Redirect: file.php?f=$ID");
         die();
     }
 } else {
