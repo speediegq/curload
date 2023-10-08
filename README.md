@@ -1,7 +1,17 @@
+![img](resources/curload-white.svg)
+
 # curload
 
-curload is a simple file uploading site allowing users to upload files by
-authenticating using a key.
+curload is a simple file uploading site allowing users to upload files.
+
+## Features
+
+- File uploading (with or without an account)
+- Account system, including administrators,  temporary accounts and registering
+- Administration tools, useful for creating accounts, moderating files and more.
+- Modern user interface, customizable through CSS, PHP and JavaScript.
+- User pages, useful for terms of service, privacy policy, rules, etc.
+- GPL licensed (no proprietary software here)
 
 ## Dependencies
 
@@ -34,6 +44,10 @@ by creating a PHP script (see `about.php` for an example) as well as a
 You can modify all of the PHP, but I've tried to keep it sort of user friendly.
 It is possible to style curload by using CSS classes and IDs. It is also
 possible to include JavaScript.
+
+## Examples
+
+See examples/ for some useful PHP example scripts.
 
 ## License
 
