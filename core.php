@@ -49,7 +49,7 @@ function printHeader($html) {
 
     $html .= "\t\t<title>$instanceName</title>\n";
     $html .= "\t\t<div class=\"barTitle\">\n";
-    if (file_exists($Logo)) $html .= "\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\" height=\"$logoHeaderSize\">\n";
+    if (file_exists($Logo)) $html .= "\t\t\t<img src=\"$Logo\" id=\"titleLogo\" class=\"title\" width=\"$logoHeaderSize\">\n";
     $html .= "\t\t\t<small id='title'><a id='title' href=\"/\">$instanceName</a></small>\n";
     $html .= "\t\t</div>\n";
     $html .= "\t\t<div class=\"barMenu\">\n";

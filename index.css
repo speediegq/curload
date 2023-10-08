@@ -101,7 +101,6 @@ input[type=file]::file-selector-button {
   font-size: 10pt;
   min-width: 160px;
   overflow: auto;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   margin-top: 10px;
 }
@@ -125,11 +124,6 @@ input[type=file]::file-selector-button {
 
 #administration {
     color: #ffc0cb;
-}
-
-.bar img {
-    float: left;
-    padding-right: 5px;
 }
 
 .title {
