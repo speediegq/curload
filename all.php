@@ -62,7 +62,7 @@ if ($Action == "files" && ($publicFileList || $publicFileList == "true")) {
 
         $html .= "\t\t\t\t\t<tr class=\"FileView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileID\" id=\"fileID-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"fileFilename\"><a href=\"$Filename\">$Filename</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"fileFilename\"><a href=\"file.php?f=$ID\">$Filename</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileUploadDate\">$uploadDate</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileUploader\">$Username</td>\n";
 

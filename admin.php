@@ -111,9 +111,10 @@ if ($Action == "files") {
             $userType = "Unknown";
         }
 
+        $BaseFilename = basename($Filename);
         $html .= "\t\t\t\t\t<tr class=\"adminFileView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminID\" id=\"adminID-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"adminFilename\"><a href=\"$Filename\">$Filename</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"adminFilename\"><a href=\"$Filename\">$BaseFilename</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUploadDate\">$uploadDate</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminUsername\"><a href=\"admin.php?action=users#id-$usertypeID-$Username\">$Username</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"adminuserType\">$userType</td>\n";
