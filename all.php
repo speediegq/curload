@@ -59,10 +59,11 @@ if ($Action == "files" && ($publicFileList || $publicFileList == "true")) {
         $Filename = $line['file'];
         $uploadDate = $line['uploaddate'];
         $Username = $line['username'];
+        $BaseFilename = basename($Filename);
 
         $html .= "\t\t\t\t\t<tr class=\"FileView\">\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileID\" id=\"fileID-$ID\">$ID</td>\n";
-        $html .= "\t\t\t\t\t\t<td class=\"fileFilename\"><a href=\"file.php?f=$ID\">$Filename</a></td>\n";
+        $html .= "\t\t\t\t\t\t<td class=\"fileFilename\"><a href=\"file.php?f=$ID\">$BaseFilename</a></td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileUploadDate\">$uploadDate</td>\n";
         $html .= "\t\t\t\t\t\t<td class=\"fileUploader\">$Username</td>\n";
 
