@@ -14,14 +14,14 @@ $Exists = 0;
 if (!isset($_REQUEST['a'])) {
     $Action = "view";
 } else {
-    $Action = $_REQUEST['a'];
+    $Action = htmlspecialchars($_REQUEST['a']);
 }
 
 if (!isset($_REQUEST['f'])) {
     header("Location: /");
     die();
 } else {
-    $id = $_REQUEST['f'];
+    $id = htmlspecialchars($_REQUEST['f']);
 }
 
 $html = "";
@@ -44,11 +44,11 @@ while ($line = $DatabaseQuery->fetchArray()) {
             $Exists = 1;
 
             $html .= "\t\t\t\t<h2 class=\"fileName\">$BaseFilename</h2>\n";
-            $html .= "\t\t\t\t\t<p>This file was uploaded by $Uploader on $UploadDate</p><br><br>\n";
+            $html .= "\t\t\t\t\t<p>This file was uploaded by $Uploader on $UploadDate</p><br>\n";
             $html .= "\t\t\t\t<form class=\"fileForm\" action=\"file.php\">\n";
             $html .= "\t\t\t\t\t<input type=\"hidden\" name=\"a\" value=\"dl\">\n";
             $html .= "\t\t\t\t\t<input type=\"hidden\" name=\"f\" value=\"$ID\">\n";
-            $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Download $BaseFilename\">\n";
+            $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Download '$BaseFilename'\">\n";
             $html .= "\t\t\t\t</form>\n";
             $html .= "\t\t\t\t\t<br><p><strong>Tip: You can append '&a=true' to get a direct link.</strong></p><br><br><small>You are authorized to download this file. The authors of this site take no responsibility for the uploaded file. By downloading this file, you obtain a copy of the uploaded file. Unless otherwise specified in the file or law, the uploader reserves all rights to the file, including copyright.<br><br><strong>For legal issues, contact the uploader of this file.</strong></small>\n";
         }

@@ -24,7 +24,7 @@ $typeNum = 1;
 $numberOfUploads = 0;
 
 if (isset($_REQUEST['redir'])) {
-    $Redirect = $_REQUEST['redir'];
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
 $Database = createTables($sqlDB);
@@ -60,8 +60,8 @@ if ($AuthorizedCreation != 1 && $firstUser != 1) {
 }
 
 // username must be specified
-if (isset($_REQUEST['username']) && $_REQUEST['username'] != "") {
-    $Username = $_REQUEST['username'];
+if (isset($_REQUEST['username']) && htmlspecialchars($_REQUEST['username']) != "") {
+    $Username = htmlspecialchars($_REQUEST['username']);
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=username");
@@ -75,8 +75,8 @@ if (isset($_REQUEST['username']) && $_REQUEST['username'] != "") {
 }
 
 // password must be specified
-if (isset($_REQUEST['password']) && ($_REQUEST['password'] != "" && $firstUser == 1 || $firstUser != 1)) {
-    $Password = generatePassword($_REQUEST['password']);
+if (isset($_REQUEST['password']) && (htmlspecialchars($_REQUEST['password']) != "" && $firstUser == 1 || $firstUser != 1)) {
+    $Password = generatePassword(htmlspecialchars($_REQUEST['password']));
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=password");
@@ -90,8 +90,8 @@ if (isset($_REQUEST['password']) && ($_REQUEST['password'] != "" && $firstUser =
 }
 
 // type must be specified
-if (isset($_REQUEST['type']) && $_REQUEST['type'] != "") {
-    $Type = $_REQUEST['type'];
+if (isset($_REQUEST['type']) && htmlspecialchars($_REQUEST['type']) != "") {
+    $Type = htmlspecialchars($_REQUEST['type']);
 } else {
     if ($Redirect == "admin") {
         header("Location: admin.php?action=create&e=type");
@@ -106,7 +106,7 @@ if (isset($_REQUEST['type']) && $_REQUEST['type'] != "") {
 
 // uploads left must be specified for temp users
 if (isset($_REQUEST['uploadsleft']) && $Type == "Temporary") {
-    $uploadsLeft = $_REQUEST['uploadsleft'];
+    $uploadsLeft = htmlspecialchars($_REQUEST['uploadsleft']);
 
     if ($uploadsLeft == 0 || !isset($_REQUEST['uploadsleft'])) {
         if ($Redirect == "admin") {

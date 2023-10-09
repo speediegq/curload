@@ -13,8 +13,8 @@ $Username = "";
 $Password = "";
 
 if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
-    $Username = $_REQUEST['username'];
-    $Password = $_REQUEST['password'];
+    $Username = htmlspecialchars($_REQUEST['username']);
+    $Password = htmlspecialchars($_REQUEST['password']);
     $WebInterface = 0;
 } else if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
     $Username = $_SESSION['username'];

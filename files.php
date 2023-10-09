@@ -10,7 +10,7 @@ include "core.php";
 $Error = "";
 $html = "";
 
-if (isset($_REQUEST['e'])) $Error = $_REQUEST['e'];
+if (isset($_REQUEST['e'])) $Error = htmlspecialchars($_REQUEST['e']);
 
 $html = printHeader($html);
 $html .= "\t\t\t<h1>Your files</h1>\n";

@@ -24,21 +24,21 @@ $id = 0;
 $type = 0;
 
 if (isset($_REQUEST['id'])) {
-    $id = $_REQUEST['id'];
+    $id = htmlspecialchars($_REQUEST['id']);
 } else {
     print "No ID specified.";
     die();
 }
 
 if (isset($_REQUEST['type'])) {
-    $type = $_REQUEST['type'];
+    $type = htmlspecialchars($_REQUEST['type']);
 } else {
     print "No type specified, is not safe to delete.";
     die();
 }
 
 if (isset($_REQUEST['redir'])) {
-    $Redirect = $_REQUEST['redir'];
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
 $Database = createTables($sqlDB);

@@ -28,7 +28,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
 }
 
 if (isset($_REQUEST['id'])) {
-    $ID = $_REQUEST['id'];
+    $ID = htmlspecialchars($_REQUEST['id']);
 } else {
     $ID = -1; // use the username and password to determine
 }
@@ -76,7 +76,7 @@ if ($Authorized == 0) {
 }
 
 if (isset($_REQUEST['e'])) {
-    $Error = $_REQUEST['e'];
+    $Error = htmlspecialchars($_REQUEST['e']);
 }
 
 $html .= "\t\t\t<h1>Account options</h1>\n";

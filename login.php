@@ -12,10 +12,10 @@ $userType = 0;
 $Redirect = "";
 
 if (isset($_REQUEST['redir'])) {
-    $Redirect = $_REQUEST['redir'];
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
-if (isset($_REQUEST['logout']) && $_REQUEST['logout'] == "true") {
+if (isset($_REQUEST['logout']) && htmlspecialchars($_REQUEST['logout']) == "true") {
     session_unset();
     session_destroy();
 
@@ -41,7 +41,7 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
     $Password = "";
 
     while ($line = $DatabaseQuery->fetchArray()) {
-        if ($line['username'] == $_REQUEST['username'] && $_REQUEST['username'] != "" && password_verify($_REQUEST['password'], $line['password'])) {
+        if ($line['username'] == htmlspecialchars($_REQUEST['username']) && htmlspecialchars($_REQUEST['username']) != "" && password_verify(htmlspecialchars($_REQUEST['password']), $line['password'])) {
             $Username = $line['username'];
             $Password = $line['password'];
             $id = $line['id'];

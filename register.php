@@ -13,10 +13,10 @@ if (!$publicAccountCreation) {
 }
 
 if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
-    $Username = $_REQUEST['username'];
-    $Password = generatePassword($_REQUEST['password']);
+    $Username = htmlspecialchars($_REQUEST['username']);
+    $Password = generatePassword(htmlspecialchars($_REQUEST['password']));
 
-    if ($_REQUEST['password'] != $_REQUEST['cpassword']) {
+    if (htmlspecialchars($_REQUEST['password']) != htmlspecialchars($_REQUEST['cpassword'])) {
         header("Location: register.php?e=mismatch");
         die();
     }
@@ -55,12 +55,12 @@ if (isset($_REQUEST['username']) && isset($_REQUEST['password'])) {
     $html .= "\t\t\t\t\t<input type=\"submit\" value=\"Create account\">\n";
     $html .= "\t\t\t\t</form>\n";
 
-    if (isset($_REQUEST['e']) && $_REQUEST['e'] == "exists") {
+    if (isset($_REQUEST['e']) && htmlspecialchars($_REQUEST['e']) == "exists") {
         session_unset();
         session_destroy();
 
         $html .= "\t\t\t\t<p class=\"error\">An account by this name already exists.</p>\n";
-    } else if (isset($_REQUEST['e']) && $_REQUEST['e'] == "mismatch") {
+    } else if (isset($_REQUEST['e']) && htmlspecialchars($_REQUEST['e']) == "mismatch") {
         session_unset();
         session_destroy();
 

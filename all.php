@@ -12,7 +12,7 @@ $Action = "";
 if (!isset($_REQUEST['action'])) {
     $Action = "files";
 } else {
-    $Action = $_REQUEST['action'];
+    $Action = htmlspecialchars($_REQUEST['action']);
 }
 
 $html = "";

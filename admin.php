@@ -24,19 +24,19 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['password']) || !isset($_S
 if (!isset($_REQUEST['action'])) {
     $Action = "files";
 } else {
-    $Action = $_REQUEST['action'];
+    $Action = htmlspecialchars($_REQUEST['action']);
 }
 
 if (!isset($_REQUEST['id'])) {
     $filterID = -1;
 } else {
-    $filterID = $_REQUEST['id'];
+    $filterID = htmlspecialchars($_REQUEST['id']);
 }
 
 if (!isset($_REQUEST['e'])) {
     $Error = "";
 } else {
-    $Error = $_REQUEST['e'];
+    $Error = htmlspecialchars($_REQUEST['e']);
 }
 
 $Database = createTables($sqlDB);

@@ -21,7 +21,7 @@ $IsCurrentUser = false;
 $Redirect = "";
 
 if (isset($_REQUEST['redir'])) {
-    $Redirect = $_REQUEST['redir'];
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
 // make sure a username and password is specified for authentication
@@ -42,14 +42,14 @@ if (isset($_SESSION['username']) && isset($_SESSION['password'])) {
 }
 
 if (isset($_REQUEST['id'])) {
-    $ID = $_REQUEST['id'];
+    $ID = htmlspecialchars($_REQUEST['id']);
 } else {
     $ID = -1; // use the username and password to determine
 }
 
 // action
 if (isset($_REQUEST['action'])) {
-    $Action = $_REQUEST['action'];
+    $Action = htmlspecialchars($_REQUEST['action']);
 } else {
     if ($Redirect == "account") {
         header("Location: account.php?id=$ID&e=action");
@@ -129,7 +129,7 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
         }
     }
 
-    if ($_REQUEST['newpass'] != $_REQUEST['newpassc']) {
+    if (htmlspecialchars($_REQUEST['newpass']) != htmlspecialchars($_REQUEST['newpassc'])) {
         if ($Redirect == "account") {
             header("Location: account.php?id=$ID&e=pmismatch");
             die();
@@ -142,9 +142,9 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
         }
     }
 
-    $NewPassword = htmlspecialchars(generatePassword($_REQUEST['newpass']));
+    $NewPassword = generatePassword(htmlspecialchars($_REQUEST['newpass']));
 
-    if (!password_verify($_REQUEST['curpass'], $CurPassword) && $IsCurrentUser) {
+    if (!password_verify(htmlspecialchars($_REQUEST['curpass']), $CurPassword) && $IsCurrentUser) {
         if ($Redirect == "account") {
             header("Location: account.php?id=$ID&e=pauth");
             die();
@@ -187,7 +187,7 @@ if ($Action == "pass" && ($allowPasswordChange || !$IsCurrentUser)) {
 
     $NewUsername = htmlspecialchars($_REQUEST['newusername']);
 
-    if ($CurUsername != $_REQUEST['curusername'] && $IsCurrentUser) {
+    if ($CurUsername != htmlspecialchars($_REQUEST['curusername']) && $IsCurrentUser) {
         if ($Redirect == "account") {
             header("Location: account.php?id=$ID&e=umismatch");
             die();

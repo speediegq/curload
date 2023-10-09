@@ -16,7 +16,7 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['password']) || !isset($_S
 }
 
 if (isset($_REQUEST['id'])) {
-    $fileID = $_REQUEST['id'];
+    $fileID = htmlspecialchars($_REQUEST['id']);
 } else {
     print "No ID specified.";
     die();
@@ -33,7 +33,7 @@ $AuthorizedRemoval = 0;
 $fileUploadedByPrimary = 0;
 
 if (isset($_REQUEST['redir'])) {
-    $Redirect = $_REQUEST['redir'];
+    $Redirect = htmlspecialchars($_REQUEST['redir']);
 }
 
 $Database = createTables($sqlDB);
