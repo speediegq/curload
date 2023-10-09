@@ -1,6 +1,11 @@
+@font-face {
+  font-family: 'Noto Sans';
+  src: URL('font.ttf') format('truetype');
+}
+
 .barTitle {
     font-size: 15pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
 	position: sticky;
@@ -17,7 +22,7 @@
 
 .barMenu {
     font-size: 15pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
 	position: sticky;
@@ -39,7 +44,7 @@
 
 input, select {
     font-size: 12pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
     padding: 7px;
@@ -59,7 +64,7 @@ input[type=file] {
 
 input[type=file]::file-selector-button {
     font-size: 12pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
     width: 50%;
@@ -151,7 +156,7 @@ input[type=file]::file-selector-button {
 
 .content {
     font-size: 12pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
 	color: #f0eee4;
@@ -216,7 +221,7 @@ body {
 
 footer {
     font-size: 12pt;
-    font-family: Monospace;
+    font-family: Noto Sans;
     font-weight: normal;
 
     padding: 5px;

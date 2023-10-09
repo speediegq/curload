@@ -52,3 +52,5 @@ See examples/ for some useful PHP example scripts.
 ## License
 
 GNU Affero General Public License version 3.0. See `COPYING` for details.
+The font included is called Noto Sans, and is licensed under the SIL Open
+Font License. See `OFL.txt` for copyright details.
