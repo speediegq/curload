@@ -4,8 +4,8 @@
 </Files>
 
 RewriteEngine On
-  
-RewriteCond %{REQUEST_METHOD} !POST     
+
+RewriteCond %{REQUEST_METHOD} !POST
 RewriteCond %{THE_REQUEST} \s/([^.]+)\.php [NC]
 RewriteRule ^ /%1 [NE,L,R]
 
@@ -15,4 +15,6 @@ RewriteRule ^(.*)$ $1/ [L]
 
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
-RewriteRule ^([^\.]+)/$ $1.php 
+RewriteRule ^([^\.]+)/$ $1.php
+
+ForceType application/octet-stream
