@@ -33,9 +33,20 @@ $DatabaseQuery = $Database->query('SELECT * FROM uploads');
 while ($line = $DatabaseQuery->fetchArray()) {
     if ($line['id'] == $id) {
         if ($Action != "view") {
-            $File = $line['file'];
-            header("Location: $File");
-            die();
+            $File = $_SERVER['DOCUMENT_ROOT'] . $line['file'];
+
+            if (file_exists($File)) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename='.basename($File));
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($File));
+                readfile($File);
+            }
+
+            exit;
         } else {
             $BaseFilename = basename($line['file']);
             $ID = $line['id'];

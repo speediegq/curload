@@ -16,5 +16,3 @@ RewriteRule ^(.*)$ $1/ [L]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^([^\.]+)/$ $1.php
-
-ForceType application/octet-stream
